@@ -10,8 +10,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+add_subdirectory(match-mountain/src)
 add_subdirectory(third-party)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 
-add_executable(match-mountain match-mountain/src/main.cpp)
+#message(STATUS, ${SOURCES})
+add_executable(match-mountain ${SOURCES})
 target_link_libraries(match-mountain SDL2)
