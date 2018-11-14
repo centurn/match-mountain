@@ -1,6 +1,10 @@
-#ifndef MAM_BASE_H
-#define MAM_BASE_H
+#pragma once
 
+#include "mam_log.h"
+#include <exception>
 
-
-#endif
+// Say 'goodbye' and die!
+#define PANIC(...){\
+    log_e(__VA_ARGS__);\
+    std::abort();\
+}
