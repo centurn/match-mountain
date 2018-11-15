@@ -19,6 +19,9 @@ class Window{
 public:
     Window();
     ~Window();
+    SDL_Window* getNativeWindow(){
+        return sdl_window.get();
+    }
 private:
     struct SDL_Window_Deleter{// The best way to feed deleter to unique_ptr?
         void operator()(SDL_Window* window);

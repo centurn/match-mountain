@@ -14,6 +14,12 @@ add_subdirectory(match-mountain/src)
 add_subdirectory(third-party)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 
+find_package(OpenGL REQUIRED)
+set(LIBS
+  ${OPENGL_LIBRARY}
+  SDL2
+)
+
 #message(STATUS, ${SOURCES})
 add_executable(match-mountain ${SOURCES})
-target_link_libraries(match-mountain SDL2)
+target_link_libraries(match-mountain ${LIBS})

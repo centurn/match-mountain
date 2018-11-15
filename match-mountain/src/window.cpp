@@ -34,10 +34,10 @@ Window::Window()
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
+    uint32_t flags = SDL_WINDOW_OPENGL /*| SDL_WINDOW_FULLSCREEN*/;
 
     log_i("Creating SDL Window...");
     sdl_window.reset(SDL_CreateWindow("Test!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mode.w, mode.h, flags));
@@ -61,7 +61,6 @@ Window::Window()
 
 Window::~Window()
 {
-
 }
 
 
