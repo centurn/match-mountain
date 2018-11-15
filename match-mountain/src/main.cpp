@@ -7,17 +7,21 @@
 //#include <SDL_opengles2.h>
 
 // Shader sources
-static const GLchar* vertexSource =
-    "attribute vec4 position;    \n"
-    "void main()                  \n"
-    "{                            \n"
-    "   gl_Position = vec4(position.xyz, 1.0);  \n"
-    "}                            \n";
-static const GLchar* fragmentSource =
-    "void main()                                  \n"
-    "{                                            \n"
-    "  gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0 );\n"
-    "}                                            \n";
+static const GLchar* vertexSource = R"(
+    attribute vec4 position;
+    attribute vec3 color;
+    varying vec3 vColor;
+    void main()
+    {
+        vColor = color;
+      gl_Position = vec4(position.xyz, 1.0);
+    })";
+static const GLchar* fragmentSource = R"(
+    varying vec3 vColor;
+    void main()
+    {
+      gl_FragColor = vec4 (vColor, 1.0 );
+    })";
 
 
 static std::function<void()> loop;
@@ -40,23 +44,50 @@ int main(int /*argc*/, char */*argv*/[])
     glBindVertexArray(vao);
 
     // Create a Vertex Buffer Object and copy the vertex data to it
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
+    GLuint vbo[2];
+    glGenBuffers(2, vbo);
 
     GLfloat vertices[] = {0.0f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f};
+    GLfloat colors[] = {1.0f, 0.0f, 0.0f
+                       , 0.0, 1.0f, 0.0f
+                       , 0.0f, 0.0f, 1.0f};
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
     // Create and compile the vertex shader
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexSource, NULL);
     glCompileShader(vertexShader);
 
+    GLint vertex_compiled;
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertex_compiled);
+    if (vertex_compiled != GL_TRUE)
+    {
+        GLsizei log_length = 0;
+        GLchar message[1024];
+        glGetShaderInfoLog(vertexShader, 1024, &log_length, message);
+        log_e("VS compile failed error: %s\n", message);
+    }else{
+        log_d("VS Compile OK\n");
+    }
     // Create and compile the fragment shader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
     glCompileShader(fragmentShader);
+    GLint fragment_compiled;
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragment_compiled);
+    if (fragment_compiled != GL_TRUE)
+    {
+        GLsizei log_length = 0;
+        GLchar message[1024];
+        glGetShaderInfoLog(fragmentShader, 1024, &log_length, message);
+        log_e("FS compile failed error: %s\n", message);
+    }else{
+        log_d("VS Compile OK\n");
+    }
 
     // Link the vertex and fragment shader into a shader program
     GLuint shaderProgram = glCreateProgram();
@@ -68,8 +99,13 @@ int main(int /*argc*/, char */*argv*/[])
 
     // Specify the layout of the vertex data
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
+    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glEnableVertexAttribArray(colorAttrib);
+    glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     loop = [&]
     {
@@ -81,7 +117,7 @@ int main(int /*argc*/, char */*argv*/[])
 
 
         // Clear the screen
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw a triangle from the 3 vertices
