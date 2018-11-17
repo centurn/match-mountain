@@ -1,7 +1,18 @@
-#include <SDL.h>
 #include <cstdio>
+#include <functional>
 
 #include "window.h"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+//#include <SDL.h>
+//#include <SDL_image.h>
+//#include <SDL_ttf.h>
+#else
+#endif
+
+#include <SDL.h>
+
 #include <GLES3/gl3.h>
 //#define GL_GLEXT_PROTOTYPES 1
 //#include <SDL_opengles2.h>
@@ -17,6 +28,9 @@ static const GLchar* vertexSource = R"(
       gl_Position = vec4(position.xyz, 1.0);
     })";
 static const GLchar* fragmentSource = R"(
+    #ifdef GL_ES
+        precision mediump float;
+    #endif
     varying vec3 vColor;
     void main()
     {

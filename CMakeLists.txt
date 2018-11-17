@@ -11,14 +11,25 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(match-mountain/src)
-add_subdirectory(third-party)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 
 find_package(OpenGL REQUIRED)
 set(LIBS
   ${OPENGL_LIBRARY}
-  SDL2
 )
+
+IF (EMSCRIPTEN)
+SET(CMAKE_CXX_FLAGS "-s USE_SDL=2")
+ELSE ()
+add_subdirectory(third-party)
+set(LIBS
+  SDL2
+  ${LIBS}
+)
+
+ENDIF()
+
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 
 #message(STATUS, ${SOURCES})
 add_executable(match-mountain ${SOURCES})

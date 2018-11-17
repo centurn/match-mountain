@@ -33,4 +33,5 @@
 
 # Build results folder
 build/
+build-em/
 *.user
