@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <functional>
+#include <cmath>
 
 #include "window.h"
 
@@ -21,11 +22,12 @@
 static const GLchar* vertexSource = R"(
     attribute vec4 position;
     attribute vec3 color;
+    uniform mat4 World;
     varying vec3 vColor;
     void main()
     {
         vColor = color;
-      gl_Position = vec4(position.xyz, 1.0);
+      gl_Position = World * vec4(position.xyz, 1.0);
     })";
 static const GLchar* fragmentSource = R"(
     #ifdef GL_ES
@@ -121,6 +123,7 @@ int main(int /*argc*/, char */*argv*/[])
     glEnableVertexAttribArray(colorAttrib);
     glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+    float angle = 0;
     loop = [&]
     {
         SDL_Event e;
@@ -129,6 +132,15 @@ int main(int /*argc*/, char */*argv*/[])
             if(e.type == SDL_QUIT) std::abort();
         }
 
+        angle += 3.14159f/512;
+        float rot[16] =   {
+                           std::cos(angle), 0, std::sin(angle), 0
+                         , 0, 1, 0, 0
+                         , -std::sin(angle), 0, std::cos(angle), 0
+                         , 0, 0, 0, 1};
+
+        GLint worldUniform = glGetUniformLocation(shaderProgram, "World");
+        glUniformMatrix4fv(worldUniform, 1, GL_FALSE, rot);
 
         // Clear the screen
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
