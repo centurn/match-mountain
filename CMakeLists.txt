@@ -28,8 +28,8 @@ set(LIBS
 
 ENDIF()
 
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/stb)
 
 #message(STATUS, ${SOURCES})
 add_executable(match-mountain ${SOURCES})
