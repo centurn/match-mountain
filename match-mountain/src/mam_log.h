@@ -14,5 +14,5 @@
 #define log_d(...)
 #else
 // Debug log - print only in debug build
-#define log_d(...) std::printf(__VA_ARGS__)
+#define log_d(...){ std::printf(__VA_ARGS__); fflush (stdout); };
 #endif

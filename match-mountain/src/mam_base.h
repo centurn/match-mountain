@@ -4,6 +4,8 @@
 #include <exception>
 #include <string>
 
+using uint = unsigned int;
+
 // Say 'goodbye' and die!
 #define PANIC(...){\
     log_e(__VA_ARGS__);\

@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "window.h"
+#include "background-image.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -14,7 +15,8 @@
 
 #include <SDL.h>
 
-#include <GLES3/gl3.h>
+#include "mam_gl.h"
+//#include <GLES3/gl3.h>
 //#define GL_GLEXT_PROTOTYPES 1
 //#include <SDL_opengles2.h>
 
@@ -50,6 +52,7 @@ void test_render(){
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
+    BackgroundImage background("/home/centurn/Pictures/37800 IMG_2844.jpg");
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
@@ -111,7 +114,7 @@ int main(int /*argc*/, char */*argv*/[])
     glAttachShader(shaderProgram, fragmentShader);
     // glBindFragDataLocation(shaderProgram, 0, "outColor");
     glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);
+    glUseProgram(shaderProgram);checkGL();
 
     // Specify the layout of the vertex data
     GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
@@ -139,13 +142,15 @@ int main(int /*argc*/, char */*argv*/[])
                          , -std::sin(angle), 0, std::cos(angle), 0
                          , 0, 0, 0, 1};
 
-        GLint worldUniform = glGetUniformLocation(shaderProgram, "World");
-        glUniformMatrix4fv(worldUniform, 1, GL_FALSE, rot);
-
         // Clear the screen
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        background.render();
+        glUseProgram(shaderProgram);checkGL();
+        glBindVertexArray(vao);checkGL();
+        GLint worldUniform = glGetUniformLocation(shaderProgram, "World");
+        glUniformMatrix4fv(worldUniform, 1, GL_FALSE, rot);
         // Draw a triangle from the 3 vertices
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
