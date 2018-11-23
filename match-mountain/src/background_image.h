@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mam_base.h"
+#include "shader_program.h"
 #include <memory>
 
 class Bitmap;
@@ -14,11 +15,10 @@ public:
 private:
     void prepareGL();
     void prepareTexture();
-    void prepareShaders();
     void prepareVAO();
     std::unique_ptr<Bitmap> bitmap;
 
     uint texture_id = 0;
     uint vao = 0;
-    uint shaderProgram  = 0;
+    ShaderProgram shaderProgram;
 };

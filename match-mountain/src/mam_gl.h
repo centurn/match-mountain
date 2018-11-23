@@ -1,13 +1,11 @@
 #include "mam_log.h"
 #include <GLES3/gl3.h>
 
-//#define GL_CHECK(Operation){\
-//    Operation;\
-//    if(auto err = glGetError() != GL_NO_ERROR){\
+#ifndef NDEBUG
+    #define ENABLE_GL_CHECKS
+#endif
 
-//    }\
-//}
-
+#ifdef ENABLE_GL_CHECKS
 inline void checkGLFunc(const char* file, int line){
     GLenum err;
     while( (err = glGetError()) != GL_NO_ERROR){
@@ -17,3 +15,10 @@ inline void checkGLFunc(const char* file, int line){
 }
 
 #define checkGL() checkGLFunc(__FILE__, __LINE__)
+
+#else
+
+#define checkGL()
+
+#endif
+
