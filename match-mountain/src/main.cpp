@@ -16,9 +16,6 @@
 #include <SDL.h>
 
 #include "mam_gl.h"
-//#include <GLES3/gl3.h>
-//#define GL_GLEXT_PROTOTYPES 1
-//#include <SDL_opengles2.h>
 
 // Shader sources
 static const GLchar* vertexSource = R"(
@@ -53,6 +50,7 @@ int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
     BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
+    ShaderProgram shaderProgram;
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
@@ -76,52 +74,15 @@ int main(int /*argc*/, char */*argv*/[])
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
 
-    // Create and compile the vertex shader
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexSource, NULL);
-    glCompileShader(vertexShader);
-
-    GLint vertex_compiled;
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertex_compiled);
-    if (vertex_compiled != GL_TRUE)
-    {
-        GLsizei log_length = 0;
-        GLchar message[1024];
-        glGetShaderInfoLog(vertexShader, 1024, &log_length, message);
-        log_e("VS compile failed error: %s\n", message);
-    }else{
-        log_d("VS Compile OK\n");
-    }
-    // Create and compile the fragment shader
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-    glCompileShader(fragmentShader);
-    GLint fragment_compiled;
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragment_compiled);
-    if (fragment_compiled != GL_TRUE)
-    {
-        GLsizei log_length = 0;
-        GLchar message[1024];
-        glGetShaderInfoLog(fragmentShader, 1024, &log_length, message);
-        log_e("FS compile failed error: %s\n", message);
-    }else{
-        log_d("VS Compile OK\n");
-    }
-
-    // Link the vertex and fragment shader into a shader program
-    GLuint shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    // glBindFragDataLocation(shaderProgram, 0, "outColor");
-    glLinkProgram(shaderProgram);
-    glUseProgram(shaderProgram);checkGL();
+    shaderProgram.init(vertexSource, fragmentSource);
+    shaderProgram.bind();
 
     // Specify the layout of the vertex data
-    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
+    GLint posAttrib = glGetAttribLocation(shaderProgram.getID(), "position");
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    GLint colorAttrib = glGetAttribLocation(shaderProgram, "color");
+    GLint colorAttrib = glGetAttribLocation(shaderProgram.getID(), "color");
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
     glEnableVertexAttribArray(colorAttrib);
     glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
@@ -147,9 +108,9 @@ int main(int /*argc*/, char */*argv*/[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         background.render();
-        glUseProgram(shaderProgram);checkGL();
+        glUseProgram(shaderProgram.getID());checkGL();
         glBindVertexArray(vao);checkGL();
-        GLint worldUniform = glGetUniformLocation(shaderProgram, "World");
+        GLint worldUniform = glGetUniformLocation(shaderProgram.getID(), "World");
         glUniformMatrix4fv(worldUniform, 1, GL_FALSE, rot);
         // Draw a triangle from the 3 vertices
         glDrawArrays(GL_TRIANGLES, 0, 3);
