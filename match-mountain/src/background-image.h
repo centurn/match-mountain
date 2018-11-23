@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mam_base.h"
 #include <memory>
 
 class Bitmap;

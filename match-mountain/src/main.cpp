@@ -52,7 +52,7 @@ void test_render(){
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
-    BackgroundImage background("/home/centurn/Pictures/37800 IMG_2844.jpg");
+    BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);

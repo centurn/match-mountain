@@ -17,14 +17,15 @@ set(LIBS
   ${OPENGL_LIBRARY}
 )
 
+add_definitions( -DASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/test/" )
 IF (EMSCRIPTEN)
-SET(CMAKE_CXX_FLAGS "-s USE_SDL=2")
+  SET(CMAKE_CXX_FLAGS "-s USE_SDL=2 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
 ELSE ()
-add_subdirectory(third-party)
-set(LIBS
-  SDL2
-  ${LIBS}
-)
+  add_subdirectory(third-party)
+  set(LIBS
+    SDL2
+    ${LIBS}
+  )
 
 ENDIF()
 
