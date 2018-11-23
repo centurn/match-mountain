@@ -1,4 +1,4 @@
-#include "background-image.h"
+#include "background_image.h"
 
 #include "bitmap.h"
 #include "mam_gl.h"

@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include "window.h"
-#include "background-image.h"
+#include "background_image.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
