@@ -42,10 +42,6 @@ static const GLchar* fragmentSource = R"(
 static std::function<void()> loop;
 void main_loop() { loop(); }
 
-void test_render(){
-
-}
-
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
@@ -88,12 +84,16 @@ int main(int /*argc*/, char */*argv*/[])
     glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     float angle = 0;
+    bool quit = false;
     loop = [&]
     {
         SDL_Event e;
         while(SDL_PollEvent(&e))
         {
-            if(e.type == SDL_QUIT) std::abort();
+            if(e.type == SDL_QUIT){
+                quit = true;
+                return;
+            }
         }
 
         angle += 3.14159f/512;
@@ -121,7 +121,8 @@ int main(int /*argc*/, char */*argv*/[])
 #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    while(true) main_loop();
+    while(!quit)
+        main_loop();
 #endif
 
     return 0;

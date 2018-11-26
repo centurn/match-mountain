@@ -57,8 +57,6 @@ void BackgroundImage::prepareGL()
     if(bitmap == nullptr){
         return;
     }
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);checkGL();
 
     shaderProgram.init(vertexSource, fragmentSource);
     prepareTexture();
@@ -87,6 +85,8 @@ void BackgroundImage::prepareTexture()
 
 void BackgroundImage::prepareVAO()
 {
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);checkGL();
 
     // Create a Vertex Buffer Object and copy the vertex data to it
     GLuint vbo[2];
