@@ -6,6 +6,8 @@
 
 #include "mam_base.h"
 
+namespace asg{
+
 Bitmap::Bitmap(const char *source)
 {
     int n;
@@ -22,4 +24,6 @@ Bitmap::~Bitmap()
 void Bitmap::StbDeleter::operator()(void *data)
 {
     stbi_image_free(data);
+}
+
 }

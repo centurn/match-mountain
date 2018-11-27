@@ -2,6 +2,8 @@
 
 #include <memory>
 
+namespace asg{
+
 // Bitmap image loaded from file
 class Bitmap{
 public:
@@ -28,3 +30,5 @@ private:
     int width;
     int height;
 };
+
+}

@@ -2,7 +2,10 @@
 
 #include "mam_base.h"
 #include "shader_program.h"
+#include "attrib_buffer.h"
 #include <memory>
+
+namespace asg{
 
 class Bitmap;
 // Full-screen rendering of image background
@@ -21,4 +24,8 @@ private:
     uint texture_id = 0;
     uint vao = 0;
     ShaderProgram shaderProgram;
+    AttribBuffer positions;
+    AttribBuffer texcoords;
 };
+
+}

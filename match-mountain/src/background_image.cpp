@@ -25,8 +25,17 @@ static const GLchar* fragmentSource = R"(
 //        gl_FragColor = texture2D(uTexture, vec2(0.5, 0.5));
        //gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0 );
     })";
+
+namespace asg{
+
+static GLfloat vertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+static GLfloat tex_coords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f};
+
+
 BackgroundImage::BackgroundImage(const char *src)
     : bitmap(std::make_unique<Bitmap>(src))
+    , positions(make_span(vertices))
+    , texcoords(make_span(tex_coords))
 {
 }
 
@@ -88,23 +97,24 @@ void BackgroundImage::prepareVAO()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);checkGL();
 
-    // Create a Vertex Buffer Object and copy the vertex data to it
-    GLuint vbo[2];
-    glGenBuffers(2, vbo);checkGL();
+//    // Create a Vertex Buffer Object and copy the vertex data to it
+//    GLuint vbo[2];
+//    glGenBuffers(2, vbo);checkGL();
 
-    GLfloat vertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
-    GLfloat texcoords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f};
 
     shaderProgram.bind();
     GLuint posAttrib = GLuint(glGetAttribLocation(shaderProgram.getID(), "position"));checkGL();
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);checkGL();
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);checkGL();
+    positions.init();
+//    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);checkGL();
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);checkGL();
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(texcoords), texcoords, GL_STATIC_DRAW);checkGL();
+    texcoords.init();
+//    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coords), tex_coords, GL_STATIC_DRAW);checkGL();
     GLuint texcoordAttrib = GLuint(glGetAttribLocation(shaderProgram.getID(), "texcoord"));
     glEnableVertexAttribArray(texcoordAttrib);checkGL();
     glVertexAttribPointer(texcoordAttrib, 2, GL_FLOAT, GL_FALSE, 0, nullptr);checkGL();
 }
 
+}// namespace

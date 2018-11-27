@@ -6,6 +6,12 @@
 
 using uint = unsigned int;
 
+// Move it to our namespace just for convenience
+// Or should I place it in std:: directly?
+#define TCB_SPAN_NAMESPACE_NAME asg
+
+#include "span.hpp"
+
 // Say 'goodbye' and die!
 #define PANIC(...){\
     log_e(__VA_ARGS__);\
@@ -28,6 +34,9 @@ private:
     std::string reason;
 };
 
+// Just to signify the intentional absence of 'explicit' qualifier
+#define IMPLICIT
+
 // Actual deleters will be declared in specializations of this class
 template <class T>
 struct DeleteTraits{
@@ -44,6 +53,13 @@ struct DeleteTraits{
         }\
     };
 
+#define DEFINE_GL_ARRAY_DELETER(Class, DeleteFunc)\
+    template <>\
+    struct DeleteTraits<Class>{\
+        static void destroy(int count, uint* id){\
+            DeleteFunc(count, id);\
+        }\
+    };
 
 // Holder of OpenGL 'names' (IDs) to guarantee proper delete order
 // ...As much as possible, since there's no 'automatic'  way to guarantee
@@ -56,3 +72,11 @@ struct ResourceGL{
     uint id = 0;
 };
 
+// Same as above, but for arrays
+template <int Count, typename Deleter>
+struct ResourceArrayGL{
+    ~ResourceArrayGL(){
+        DeleteTraits<Deleter>::destroy(Count, id);
+    }
+    uint id[Count] = {};
+};

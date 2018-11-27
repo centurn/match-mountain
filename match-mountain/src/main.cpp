@@ -45,7 +45,7 @@ void main_loop() { loop(); }
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
-    BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
+    asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
     ShaderProgram shaderProgram;
 
     auto rdr = SDL_CreateRenderer(
@@ -65,21 +65,18 @@ int main(int /*argc*/, char */*argv*/[])
                        , 0.0, 1.0f, 0.0f
                        , 0.0f, 0.0f, 1.0f};
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
     shaderProgram.init(vertexSource, fragmentSource);
     shaderProgram.bind();
 
     // Specify the layout of the vertex data
     GLint posAttrib = glGetAttribLocation(shaderProgram.getID(), "position");
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(posAttrib);
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
     GLint colorAttrib = glGetAttribLocation(shaderProgram.getID(), "color");
     glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
     glEnableVertexAttribArray(colorAttrib);
     glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
