@@ -1,7 +1,7 @@
 #include "background_image.h"
 
 #include "bitmap.h"
-#include "mam_gl.h"
+#include "asg_gl.h"
 
 // Shader sources
 static const GLchar* vertexSource = R"(

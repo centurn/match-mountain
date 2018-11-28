@@ -1,4 +1,4 @@
-#include "mam_log.h"
+#include "asg_log.h"
 #include <GLES3/gl3.h>
 
 #ifndef NDEBUG

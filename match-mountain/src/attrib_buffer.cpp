@@ -1,9 +1,9 @@
 #include "attrib_buffer.h"
-#include "mam_gl.h"
-
-DEFINE_GL_ARRAY_DELETER(asg::BufferID, glDeleteBuffers);
+#include "asg_gl.h"
 
 namespace asg{
+
+DEFINE_GL_ARRAY_DELETER(BufferID, glDeleteBuffers);
 
 AttribBuffer::AttribBuffer(std::vector<byte> &&src)
 {

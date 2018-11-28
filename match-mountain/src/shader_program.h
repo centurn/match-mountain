@@ -1,7 +1,8 @@
 #pragma once
 
-#include "mam_base.h"
+#include "asg_base.h"
 
+namespace asg{
 struct ShaderID: public ResourceGL<ShaderID>{};
 struct ProgramID: public ResourceGL<ProgramID>{};
 
@@ -24,3 +25,4 @@ private:
     ShaderID fs;
     ProgramID program;
 };
+}

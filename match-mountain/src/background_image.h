@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mam_base.h"
+#include "asg_base.h"
 #include "shader_program.h"
 #include "attrib_buffer.h"
 #include <memory>

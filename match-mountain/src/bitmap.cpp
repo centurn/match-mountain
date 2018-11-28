@@ -4,7 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#include "mam_base.h"
+#include "asg_base.h"
 
 namespace asg{
 

@@ -1,10 +1,8 @@
 #pragma once
 
-#include "mam_log.h"
+#include "asg_log.h"
 #include <exception>
 #include <string>
-
-using uint = unsigned int;
 
 // Move it to our namespace just for convenience
 // Or should I place it in std:: directly?
@@ -17,6 +15,10 @@ using uint = unsigned int;
     log_e(__VA_ARGS__);\
     std::abort();\
 }
+
+namespace asg{
+
+using uint = unsigned int;
 
 // Hide it into cpp?
 class GenericException
@@ -80,3 +82,5 @@ struct ResourceArrayGL{
     }
     uint id[Count] = {};
 };
+
+}// namespace

@@ -1,7 +1,8 @@
 #include "shader_program.h"
 
-#include "mam_gl.h"
+#include "asg_gl.h"
 
+namespace asg{
 DEFINE_GL_DELETER(ShaderID, glDeleteShader);
 DEFINE_GL_DELETER(ProgramID, glDeleteProgram);
 
@@ -65,4 +66,5 @@ void ShaderProgram::compile(ShaderID& dest, const char *source, uint shaderType)
         log_e("VS compile failed error: %s\n", message);
     }
 #endif
+}
 }

@@ -15,7 +15,8 @@
 
 #include <SDL.h>
 
-#include "mam_gl.h"
+#include "asg_gl.h"
+using namespace asg;
 
 // Shader sources
 static const GLchar* vertexSource = R"(

@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "mam_base.h"
+#include "asg_base.h"
 #include <memory>// for unique_ptr
 
 // Contain the matching init/deinit of SDL core
