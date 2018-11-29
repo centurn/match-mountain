@@ -4,6 +4,7 @@
 #include "shader_program.h"
 #include "attrib_buffer.h"
 #include "mesh.h"
+#include "texture.h"
 #include <memory>
 
 namespace asg{
@@ -18,11 +19,7 @@ public:
 
     void render();
 private:
-    void prepareGL();
-    void prepareTexture();
-    std::unique_ptr<Bitmap> bitmap;
-
-    uint texture_id = 0;
+    Texture texture;
     Mesh mesh;
 };
 

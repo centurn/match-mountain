@@ -1,6 +1,5 @@
 #pragma once
 
-#include "asg_base.h"
 #include <memory>
 #include "attrib_desc.h"
 #include "draw_desc.h"
@@ -12,6 +11,7 @@ class ShaderProgram;
 class Mesh{
 public:
     Mesh();
+    ~Mesh();
 
     template<typename T>// attr is universal reference to AttribDescription
     size_t addAttribute(T&& attr);

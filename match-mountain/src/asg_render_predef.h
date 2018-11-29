@@ -3,6 +3,8 @@
 // This file contains some pre-defined basic types that match OpenGL predefines
 // This is to avoid including GL headers where it can be avoided
 
+#include "asg_base.h"
+
 namespace asg{
 
 using Rint = int;//GLint

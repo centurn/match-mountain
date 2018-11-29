@@ -9,6 +9,10 @@ Mesh::Mesh()
 {
 }
 
+Mesh::~Mesh()
+{
+}
+
 void Mesh::draw()
 {
     prepareGL();
