@@ -6,7 +6,9 @@ namespace asg{
 DEFINE_GL_DELETER(ShaderID, glDeleteShader);
 DEFINE_GL_DELETER(ProgramID, glDeleteProgram);
 
-ShaderProgram::ShaderProgram()
+ShaderProgram::ShaderProgram(const char* vs, const char* fs)
+    : vs_src(vs)
+    , fs_src(fs)
 {
 }
 
@@ -15,10 +17,18 @@ ShaderProgram::~ShaderProgram()
 
 }
 
-void ShaderProgram::init(const char *vert_source, const char * frag_source)
+void ShaderProgram::bind()
 {
-    compile(vs, vert_source, GL_VERTEX_SHADER);
-    compile(fs, frag_source, GL_FRAGMENT_SHADER);
+    prepareGL();
+    glUseProgram(program.id);checkGL();
+}
+
+void ShaderProgram::prepareGL()
+{
+    if(program.id != 0)
+        return;
+    compile(vs, vs_src.c_str(), GL_VERTEX_SHADER);
+    compile(fs, fs_src.c_str(), GL_FRAGMENT_SHADER);
 
     // Link the vertex and fragment shader into a shader program
     program.id = glCreateProgram();checkGL();
@@ -43,11 +53,6 @@ void ShaderProgram::init(const char *vert_source, const char * frag_source)
         log_e("Error validating shader: %s\n", message);
     }
 #endif
-}
-
-void ShaderProgram::bind()
-{
-    glUseProgram(program.id);checkGL();
 }
 
 void ShaderProgram::compile(ShaderID& dest, const char *source, uint shaderType)

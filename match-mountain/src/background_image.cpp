@@ -2,9 +2,10 @@
 
 #include "bitmap.h"
 #include "asg_gl.h"
+#include "mesh.h"
 
 // Shader sources
-static const GLchar* vertexSource = R"(
+static const GLchar* vs_src = R"(
     attribute vec4 position;
     attribute vec2 texcoord;
     varying vec2 vTexCoord;
@@ -13,7 +14,7 @@ static const GLchar* vertexSource = R"(
         vTexCoord = texcoord;
         gl_Position = vec4(position.xy, -1., 1.0);
     })";
-static const GLchar* fragmentSource = R"(
+static const GLchar* fs_src = R"(
     #ifdef GL_ES
         precision mediump float;
     #endif
@@ -34,9 +35,10 @@ static GLfloat tex_coords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f
 
 BackgroundImage::BackgroundImage(const char *src)
     : bitmap(std::make_unique<Bitmap>(src))
-    , positions(make_span(vertices))
-    , texcoords(make_span(tex_coords))
 {
+    mesh.setProgram(std::make_shared<asg::ShaderProgram>(vs_src, fs_src));
+    mesh.addAttribute(AttribDescr::fromArray("position", vertices, 2));
+    mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords, 2));
 }
 
 BackgroundImage::~BackgroundImage()
@@ -47,13 +49,12 @@ void BackgroundImage::render()
 {
     prepareGL();
 
-    glBindVertexArray(vao);
-    shaderProgram.bind();
+    mesh.draw();
 
     glActiveTexture(GL_TEXTURE0 + 0);checkGL();
     glBindTexture(GL_TEXTURE_2D, texture_id);checkGL();
 
-    GLint texUniform = glGetUniformLocation(shaderProgram.getID(), "uTexture");checkGL();
+    GLint texUniform = glGetUniformLocation(mesh.program->getID(), "uTexture");checkGL();
     glUniform1i(texUniform, 0);checkGL();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);checkGL();
 }
@@ -67,9 +68,7 @@ void BackgroundImage::prepareGL()
         return;
     }
 
-    shaderProgram.init(vertexSource, fragmentSource);
     prepareTexture();
-    prepareVAO();
 }
 
 void BackgroundImage::prepareTexture()
@@ -90,31 +89,6 @@ void BackgroundImage::prepareTexture()
 //    glGenerateMipmap(GL_TEXTURE_2D); // Unavailable in OpenGL 2.1, use gluBuild2DMipmaps() insteads.
 
   //  glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void BackgroundImage::prepareVAO()
-{
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);checkGL();
-
-//    // Create a Vertex Buffer Object and copy the vertex data to it
-//    GLuint vbo[2];
-//    glGenBuffers(2, vbo);checkGL();
-
-
-    shaderProgram.bind();
-    GLuint posAttrib = GLuint(glGetAttribLocation(shaderProgram.getID(), "position"));checkGL();
-    positions.init();
-//    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);checkGL();
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);checkGL();
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    texcoords.init();
-//    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(tex_coords), tex_coords, GL_STATIC_DRAW);checkGL();
-    GLuint texcoordAttrib = GLuint(glGetAttribLocation(shaderProgram.getID(), "texcoord"));
-    glEnableVertexAttribArray(texcoordAttrib);checkGL();
-    glVertexAttribPointer(texcoordAttrib, 2, GL_FLOAT, GL_FALSE, 0, nullptr);checkGL();
 }
 
 }// namespace

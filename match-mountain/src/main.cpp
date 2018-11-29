@@ -47,7 +47,7 @@ int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
     asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
-    ShaderProgram shaderProgram;
+    ShaderProgram shaderProgram(vertexSource, fragmentSource);
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
@@ -66,7 +66,6 @@ int main(int /*argc*/, char */*argv*/[])
                        , 0.0, 1.0f, 0.0f
                        , 0.0f, 0.0f, 1.0f};
 
-    shaderProgram.init(vertexSource, fragmentSource);
     shaderProgram.bind();
 
     // Specify the layout of the vertex data

@@ -15,7 +15,7 @@ public:
     template<class T, std::ptrdiff_t Extent>
     IMPLICIT inline AttribBuffer(span<T, Extent> data);
 
-    inline IMPLICIT AttribBuffer(std::vector<byte>&& src);
+    IMPLICIT AttribBuffer(std::vector<byte>&& src);
     ~AttribBuffer();
 
     // Initalizes GL state. Should be called while GL context is bound

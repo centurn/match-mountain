@@ -5,6 +5,12 @@ namespace asg{
 
 DEFINE_GL_ARRAY_DELETER(BufferID, glDeleteBuffers);
 
+AttribBuffer::AttribBuffer(const byte *src, size_t extent)
+{
+    buff.resize(extent);
+    std::memcpy(buff.data(), src, extent);
+}
+
 AttribBuffer::AttribBuffer(std::vector<byte> &&src)
 {
     buff = src;
@@ -26,13 +32,10 @@ void AttribBuffer::init()
 
 void AttribBuffer::bind()
 {
-    //glBindBuffer(GL_ARRAY_BUFFER, id_gl.id[0]);checkGL();
+    if(id_gl.id[0] == 0)
+        init();
+    glBindBuffer(GL_ARRAY_BUFFER, id_gl.id[0]);checkGL();    
 }
 
-AttribBuffer::AttribBuffer(const byte *src, size_t extent)
-{
-    buff.resize(extent);
-    std::memcpy(buff.data(), src, extent);
-}
 
 }
