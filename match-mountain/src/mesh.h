@@ -13,33 +13,46 @@ class Mesh{
 public:
     Mesh();
 
-    // attr is universal reference to AttribDescription
-    template<typename T>
-    size_t addAttribute(T&& attr){
-        attribs.emplace_back(attr);
-        return attribs.size() - 1;
-    }
+    template<typename T>// attr is universal reference to AttribDescription
+    size_t addAttribute(T&& attr);
 
     template<typename T>
-    void setDrawDescription(DrawDescr desc){
-        draw_desc = desc;
-    }
+    void setDrawDescription(DrawDescr desc);
 
-    void setProgram(const std::shared_ptr<ShaderProgram>& prog){
-        program = prog;
-    }
+    inline void setProgram(const std::shared_ptr<ShaderProgram>& prog);
+    inline const std::shared_ptr<ShaderProgram>& getProgram() const;
 
     void draw();
 
 private:
     void prepareGL();
 
-public:
+private:
     std::shared_ptr<ShaderProgram> program;
     std::vector<AttribDescr> attribs;
     DrawDescr draw_desc;
 
     uint vao = 0;
 };
+
+template<typename T>
+size_t Mesh::addAttribute(T&& attr){
+    attribs.emplace_back(attr);
+    return attribs.size() - 1;
+}
+
+template<typename T>
+void Mesh::setDrawDescription(DrawDescr desc){
+    draw_desc = desc;
+}
+
+void Mesh::setProgram(const std::shared_ptr<ShaderProgram>& prog){
+    program = prog;
+}
+
+const std::shared_ptr<ShaderProgram>& Mesh::getProgram() const
+{
+    return program;
+}
 
 }

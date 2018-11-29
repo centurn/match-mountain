@@ -54,7 +54,7 @@ void BackgroundImage::render()
     glActiveTexture(GL_TEXTURE0 + 0);checkGL();
     glBindTexture(GL_TEXTURE_2D, texture_id);checkGL();
 
-    GLint texUniform = glGetUniformLocation(mesh.program->getID(), "uTexture");checkGL();
+    GLint texUniform = glGetUniformLocation(mesh.getProgram()->getID(), "uTexture");checkGL();
     glUniform1i(texUniform, 0);checkGL();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);checkGL();
 }
