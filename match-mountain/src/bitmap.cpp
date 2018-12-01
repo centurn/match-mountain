@@ -10,11 +10,13 @@ namespace asg{
 
 Bitmap::Bitmap(const char *source)
 {
+    log_i("Loading  texture: %s\n", source);
     int n;
     data.reset(stbi_load(source, &width, &height, &n, 4));
     if(data == nullptr){
         throw GenericException(stbi_failure_reason());
     }
+    log_i("Texture loaded\n");
 }
 
 Bitmap::~Bitmap()

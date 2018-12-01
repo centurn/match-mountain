@@ -1,3 +1,7 @@
+#pragma once
+
+// This header should be a single entry point to GL
+
 #include "asg_log.h"
 #include <GLES3/gl3.h>
 

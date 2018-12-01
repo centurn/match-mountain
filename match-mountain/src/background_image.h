@@ -19,7 +19,6 @@ public:
 
     void render();
 private:
-    Texture texture;
     Mesh mesh;
 };
 

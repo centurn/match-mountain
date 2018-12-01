@@ -13,12 +13,19 @@ Mesh::~Mesh()
 {
 }
 
+void Mesh::setTexture(const std::string &name, const std::shared_ptr<Texture> &tex)
+{
+    auto uni = uniforms.add(name);
+    uni.set(tex);
+}
+
 void Mesh::draw()
 {
     prepareGL();
 
     glBindVertexArray(vao);
     program->bind();
+    uniforms.apply(program->getID());
 }
 
 void Mesh::prepareGL()

@@ -3,6 +3,7 @@
 #include <memory>
 #include "attrib_desc.h"
 #include "draw_desc.h"
+#include "uniforms.h"
 
 namespace asg{
 
@@ -22,6 +23,8 @@ public:
     inline void setProgram(const std::shared_ptr<ShaderProgram>& prog);
     inline const std::shared_ptr<ShaderProgram>& getProgram() const;
 
+    void setTexture(const std::string& name, const std::shared_ptr<Texture>& tex);
+
     void draw();
 
 private:
@@ -30,6 +33,7 @@ private:
 private:
     std::shared_ptr<ShaderProgram> program;
     std::vector<AttribDescr> attribs;
+    UniformStorage uniforms;
     DrawDescr draw_desc;
 
     uint vao = 0;

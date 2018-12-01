@@ -9,4 +9,5 @@ const char *GenericException::what() const noexcept
 {
     return reason.c_str();
 }
+
 }

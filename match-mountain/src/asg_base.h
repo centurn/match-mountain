@@ -3,6 +3,7 @@
 #include "asg_log.h"
 #include <exception>
 #include <string>
+#include <cassert>
 
 // Move it to our namespace just for convenience
 // Or should I place it in std:: directly?
@@ -35,6 +36,9 @@ public:
 private:
     std::string reason;
 };
+
+// For now, just assert, but maybe throw in the future
+#define FAIL_IF(Expr) assert(Expr);
 
 // Just to signify the intentional absence of 'explicit' qualifier
 #define IMPLICIT

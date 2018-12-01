@@ -34,11 +34,11 @@ static GLfloat tex_coords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f
 
 
 BackgroundImage::BackgroundImage(const char *src)
-    : texture(src)
 {
     mesh.setProgram(std::make_shared<asg::ShaderProgram>(vs_src, fs_src));
     mesh.addAttribute(AttribDescr::fromArray("position", vertices, 2));
     mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords, 2));
+    mesh.setTexture("uTexture", std::make_shared<Texture>(src));
 }
 
 BackgroundImage::~BackgroundImage()
@@ -48,12 +48,6 @@ BackgroundImage::~BackgroundImage()
 void BackgroundImage::render()
 {
     mesh.draw();
-
-    glActiveTexture(GL_TEXTURE0 + 0);checkGL();
-    texture.bind();
-
-    GLint texUniform = glGetUniformLocation(mesh.getProgram()->getID(), "uTexture");checkGL();
-    glUniform1i(texUniform, 0);checkGL();
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);checkGL();
 }
 

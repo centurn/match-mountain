@@ -12,6 +12,7 @@ Texture::Texture(const char *src)
 void Texture::bind()
 {
     prepareGL();
+//    log_d("Binding texture: %d", texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);checkGL();
 }
 
