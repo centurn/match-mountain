@@ -2,6 +2,9 @@
 #include <functional>
 #include <cmath>
 
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include "window.h"
 #include "background_image.h"
 
@@ -94,11 +97,11 @@ int main(int /*argc*/, char */*argv*/[])
         }
 
         angle += 3.14159f/512;
-        float rot[16] =   {
-                           std::cos(angle), 0, std::sin(angle), 0
-                         , 0, 1, 0, 0
-                         , -std::sin(angle), 0, std::cos(angle), 0
-                         , 0, 0, 0, 1};
+        glm::mat4 mt = {
+            std::cos(angle), 0, std::sin(angle), 0
+          , 0, 1, 0, 0
+          , -std::sin(angle), 0, std::cos(angle), 0
+          , 0, 0, 0, 1};
 
         // Clear the screen
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -108,7 +111,8 @@ int main(int /*argc*/, char */*argv*/[])
         glUseProgram(shaderProgram.getID());checkGL();
         glBindVertexArray(vao);checkGL();
         GLint worldUniform = glGetUniformLocation(shaderProgram.getID(), "World");
-        glUniformMatrix4fv(worldUniform, 1, GL_FALSE, rot);
+
+        glUniformMatrix4fv(worldUniform, 1, GL_FALSE, glm::value_ptr(mt));
         // Draw a triangle from the 3 vertices
         glDrawArrays(GL_TRIANGLES, 0, 3);
 

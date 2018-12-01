@@ -7,3 +7,6 @@
 [submodule "third-party/span"]
 	path = third-party/span
 	url = git@github.com:tcbrindle/span.git
+[submodule "third-party/glm"]
+	path = third-party/glm
+	url = git@github.com:g-truc/glm.git

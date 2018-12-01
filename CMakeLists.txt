@@ -32,6 +32,7 @@ ENDIF()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/stb)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/span/include/tcb)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/glm)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../span/include/tcb)
 
 
