@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
 #include "attrib_desc.h"
 #include "draw_desc.h"
 #include "uniforms.h"
+#include <memory>
 
 namespace asg{
 

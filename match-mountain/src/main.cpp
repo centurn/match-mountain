@@ -7,6 +7,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "window.h"
 #include "background_image.h"
+#include "tests.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -18,49 +19,16 @@
 #include "asg_gl.h"
 using namespace asg;
 
-// Shader sources
-static const GLchar* vertexSource = R"(
-    attribute vec4 position;
-    attribute vec3 color;
-    uniform mat4 World;
-    varying vec3 vColor;
-    void main()
-    {
-        vColor = color;
-      gl_Position = World * vec4(position.xyz, 1.0);
-    })";
-
-static const GLchar* fragmentSource = R"(
-    #ifdef GL_ES
-        precision mediump float;
-    #endif
-    varying vec3 vColor;
-    void main()
-    {
-      gl_FragColor = vec4 (vColor, 1.0 );
-    })";
-
-namespace {
 static std::function<void()> loop;
 void main_loop() { loop(); }
-
-GLfloat vertices[] = {0.0f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f};
-GLfloat colors[] = {1.0f, 0.0f, 0.0f
-                   , 0.0, 1.0f, 0.0f
-                   , 0.0f, 0.0f, 1.0f};
-}
 
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
     asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
 
-    Mesh tri;
-    tri.setProgram(std::make_shared<asg::ShaderProgram>(vertexSource, fragmentSource));
-    tri.addAttribute(AttribDescr::fromArray("position", vertices, 2));
-    tri.addAttribute(AttribDescr::fromArray("color", colors, 3));
-    tri.setDrawDescription(DrawDescr{DrawType::Triangles, 3});
-    auto rot_u = tri.addUniform("World");
+    auto tri = tests::make_triangle();
+    auto rot_u = tri->addUniform("World");
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
@@ -87,7 +55,7 @@ int main(int /*argc*/, char */*argv*/[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         background.render();
-        tri.render();
+        tri->render();
 
         SDL_GL_SwapWindow(window.getNativeWindow());
     };

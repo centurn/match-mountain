@@ -2,6 +2,7 @@
 #include "uniforms.h"
 #include "asg_gl.h"
 #include "glm/gtc/type_ptr.hpp"
+#include <algorithm>
 
 namespace asg{
 
@@ -37,6 +38,12 @@ void UniformStorage::apply(Ruint program)
 
 UniformHandler UniformStorage::add(const std::string &name)
 {
+    auto existing = std::find_if(data.begin(), data.end(), [&name](auto a){
+        return a.name == name;
+    });
+    if(existing != data.end())
+        return {static_cast<size_t>(existing - data.begin()), this};
+
     data.emplace_back(name);
     return {data.size() - 1, this};
     update_gl = true;
