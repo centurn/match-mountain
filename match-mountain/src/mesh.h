@@ -25,6 +25,8 @@ public:
 
     void setTexture(const std::string& name, const std::shared_ptr<Texture>& tex);
 
+    inline UniformHandler addUniform(const std::string name);
+
     void draw();
 
 private:
@@ -57,6 +59,11 @@ void Mesh::setProgram(const std::shared_ptr<ShaderProgram>& prog){
 const std::shared_ptr<ShaderProgram>& Mesh::getProgram() const
 {
     return program;
+}
+
+UniformHandler Mesh::addUniform(const std::string name)
+{
+    return uniforms.add(name);
 }
 
 }

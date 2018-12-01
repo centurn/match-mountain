@@ -38,7 +38,8 @@ private:
 };
 
 // For now, just assert, but maybe throw in the future
-#define FAIL_IF(Expr) assert(Expr);
+#define VALIDATE(Expr) assert(Expr);
+#define FAIL() assert(0);
 
 // Just to signify the intentional absence of 'explicit' qualifier
 #define IMPLICIT

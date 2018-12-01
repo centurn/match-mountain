@@ -14,7 +14,7 @@ inline void checkGLFunc(const char* file, int line){
     GLenum err;
     while( (err = glGetError()) != GL_NO_ERROR){
         log_e("GL Error: 0x%X . Location: %s:%d\n", err, file, line);
-        //std::abort();
+        std::abort();
     }
 }
 

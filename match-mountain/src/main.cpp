@@ -10,9 +10,6 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
-//#include <SDL.h>
-//#include <SDL_image.h>
-//#include <SDL_ttf.h>
 #else
 #endif
 
@@ -32,6 +29,7 @@ static const GLchar* vertexSource = R"(
         vColor = color;
       gl_Position = World * vec4(position.xyz, 1.0);
     })";
+
 static const GLchar* fragmentSource = R"(
     #ifdef GL_ES
         precision mediump float;
@@ -42,46 +40,29 @@ static const GLchar* fragmentSource = R"(
       gl_FragColor = vec4 (vColor, 1.0 );
     })";
 
-
+namespace {
 static std::function<void()> loop;
 void main_loop() { loop(); }
+
+GLfloat vertices[] = {0.0f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f};
+GLfloat colors[] = {1.0f, 0.0f, 0.0f
+                   , 0.0, 1.0f, 0.0f
+                   , 0.0f, 0.0f, 1.0f};
+}
 
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
     asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
-    ShaderProgram shaderProgram(vertexSource, fragmentSource);
+
+    Mesh tri;
+    tri.setProgram(std::make_shared<asg::ShaderProgram>(vertexSource, fragmentSource));
+    tri.addAttribute(AttribDescr::fromArray("position", vertices, 2));
+    tri.addAttribute(AttribDescr::fromArray("color", colors, 3));
+    auto rot_u = tri.addUniform("World");
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-
-    // Create Vertex Array Object
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // Create a Vertex Buffer Object and copy the vertex data to it
-    GLuint vbo[2];
-    glGenBuffers(2, vbo);
-
-    GLfloat vertices[] = {0.0f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f};
-    GLfloat colors[] = {1.0f, 0.0f, 0.0f
-                       , 0.0, 1.0f, 0.0f
-                       , 0.0f, 0.0f, 1.0f};
-
-    shaderProgram.bind();
-
-    // Specify the layout of the vertex data
-    GLint posAttrib = glGetAttribLocation(shaderProgram.getID(), "position");
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    GLint colorAttrib = glGetAttribLocation(shaderProgram.getID(), "color");
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(colorAttrib);
-    glVertexAttribPointer(colorAttrib, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     float angle = 0;
     bool quit = false;
@@ -108,12 +89,9 @@ int main(int /*argc*/, char */*argv*/[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         background.render();
-        glUseProgram(shaderProgram.getID());checkGL();
-        glBindVertexArray(vao);checkGL();
-        GLint worldUniform = glGetUniformLocation(shaderProgram.getID(), "World");
+        rot_u.set(mt);
+        tri.draw();
 
-        glUniformMatrix4fv(worldUniform, 1, GL_FALSE, glm::value_ptr(mt));
-        // Draw a triangle from the 3 vertices
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         SDL_GL_SwapWindow(window.getNativeWindow());

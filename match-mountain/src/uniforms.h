@@ -2,6 +2,7 @@
 
 #include "asg_render_predef.h"
 #include "texture.h"
+#include "glm/mat4x4.hpp"
 #include <vector>
 #include <variant>
 
@@ -15,6 +16,7 @@ struct UniformData{
     {}
     std::string name;
     std::variant<float
+               , glm::mat4
                , std::shared_ptr<Texture>> data;
     Rint gl_id = -1;
 };
@@ -28,7 +30,7 @@ private: friend UniformHandler;
     void prepareGL(Ruint program);
 
     std::vector<UniformData> data;
-    bool update_gl = false;
+    bool update_gl = true;
 };
 
 class UniformHandler{

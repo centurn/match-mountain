@@ -38,12 +38,12 @@ void Mesh::prepareGL()
 
     program->bind();
     for(const auto& i: attribs){
-        GLuint attrib_id = static_cast<GLuint>(
-                           glGetAttribLocation(program->getID(), i.name.c_str())); checkGL();
+        GLint attrib_id = glGetAttribLocation(program->getID(), i.name.c_str()); checkGL();
+        VALIDATE(attrib_id != -1);
 
         i.buff->bind();
-        glEnableVertexAttribArray(attrib_id);
-        glVertexAttribPointer(attrib_id
+        glEnableVertexAttribArray(static_cast<GLuint>(attrib_id));
+        glVertexAttribPointer(static_cast<GLuint>(attrib_id)
                               , i.num_components
                               , static_cast<GLenum>(i.type)
                               , GL_FALSE

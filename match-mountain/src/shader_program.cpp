@@ -40,10 +40,7 @@ void ShaderProgram::prepareGL()
     GLint linkResult;
     glGetProgramiv(program.id, GL_LINK_STATUS, &linkResult);
 
-    if (linkResult == GL_FALSE){
-        log_e("Failed to link shader program\n");
-    }
-
+    VALIDATE(linkResult != GL_FALSE);
     glValidateProgram(program.id);
     glGetProgramiv(program.id, GL_VALIDATE_STATUS, &linkResult);
     if (linkResult == GL_FALSE) {
@@ -51,6 +48,7 @@ void ShaderProgram::prepareGL()
         GLchar message[1024];
         glGetProgramInfoLog(program.id, sizeof(message), &log_length, message);
         log_e("Error validating shader: %s\n", message);
+        FAIL();
     }
 #endif
 }
@@ -69,6 +67,7 @@ void ShaderProgram::compile(ShaderID& dest, const char *source, uint shaderType)
         GLchar message[1024];
         glGetShaderInfoLog(dest.id, sizeof(message), &log_length, message);
         log_e("VS compile failed error: %s\n", message);
+        FAIL();
     }
 #endif
 }
