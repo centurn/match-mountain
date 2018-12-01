@@ -4,7 +4,7 @@
 
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
+#include "glm/gtc/matrix_transform.hpp"
 #include "window.h"
 #include "background_image.h"
 
@@ -78,18 +78,14 @@ int main(int /*argc*/, char */*argv*/[])
         }
 
         angle += 3.14159f/512;
-        glm::mat4 mt = {
-            std::cos(angle), 0, std::sin(angle), 0
-          , 0, 1, 0, 0
-          , -std::sin(angle), 0, std::cos(angle), 0
-          , 0, 0, 0, 1};
+        glm::mat4 mt = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, 0.0});
+        rot_u.set(mt);
 
         // Clear the screen
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         background.render();
-        rot_u.set(mt);
         tri.draw();
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
