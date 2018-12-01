@@ -1,11 +1,10 @@
 #include "background_image.h"
 
 #include "bitmap.h"
-#include "asg_gl.h"
 #include "mesh.h"
 
 // Shader sources
-static const GLchar* vs_src = R"(
+static const char* vs_src = R"(
     attribute vec4 position;
     attribute vec2 texcoord;
     varying vec2 vTexCoord;
@@ -14,7 +13,7 @@ static const GLchar* vs_src = R"(
         vTexCoord = texcoord;
         gl_Position = vec4(position.xy, -1., 1.0);
     })";
-static const GLchar* fs_src = R"(
+static const char* fs_src = R"(
     #ifdef GL_ES
         precision mediump float;
     #endif
@@ -29,9 +28,12 @@ static const GLchar* fs_src = R"(
 
 namespace asg{
 
-static GLfloat vertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
-static GLfloat tex_coords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f};
-
+namespace{
+static float vertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+static float tex_coords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f};
+static Ruint indices[] = {0, 1, 2, 2, 1, 3};
+//static Rushort indices[] = {0, 2, 1, 1, 2, 3};
+}
 
 BackgroundImage::BackgroundImage(const char *src)
 {
@@ -39,7 +41,10 @@ BackgroundImage::BackgroundImage(const char *src)
     mesh.addAttribute(AttribDescr::fromArray("position", vertices, 2));
     mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords, 2));
     mesh.setTexture("uTexture", std::make_shared<Texture>(src));
-    mesh.setDrawDescription(DrawDescr{DrawType::TriangleStrip, 4});
+    mesh.setDrawDescription(DrawDescr{DrawType::Triangles
+                                      , 6
+                                      , std::make_shared<AttribBuffer>(make_span(indices), false)
+                                      , ScalarType::UInt});
 }
 
 BackgroundImage::~BackgroundImage()

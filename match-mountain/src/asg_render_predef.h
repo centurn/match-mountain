@@ -10,6 +10,8 @@ namespace asg{
 using Rint = int;//GLint
 using Ruint = unsigned int;// GLuint
 using Renum = unsigned int;// GLenum
+using Rushort = unsigned short;// GLushort
+using Rshort = short;// GLshort
 using Rsize = int;//GLSizei
 
 enum class ScalarType : Renum{
@@ -18,12 +20,12 @@ enum class ScalarType : Renum{
 , Short = 0x1402 // GL_SHORT
 , UShort = 0x1403 // GL_UNSIGNED_SHORT
 , Int = 0x1404 // GL_INT
-, Uint = 0x1405 // GL_UNSIGNED_INT
+, UInt = 0x1405 // GL_UNSIGNED_INT
 , Float = 0x1406 // GL_FLOAT
 };
 
 
-// Type traits to determine the openGL type by passed array contents
+// Type traits to determine the OpenGL type by passed array contents
 template <typename T>
 struct DeduceScalarType{
 };
@@ -31,6 +33,16 @@ struct DeduceScalarType{
 template <>
 struct DeduceScalarType<float>{
     static constexpr ScalarType scalar_type = ScalarType::Float;
+};
+
+template <>
+struct DeduceScalarType<Rint>{
+    static constexpr ScalarType scalar_type = ScalarType::Int;
+};
+
+template <>
+struct DeduceScalarType<Rushort>{
+    static constexpr ScalarType scalar_type = ScalarType::UShort;
 };
 
 }

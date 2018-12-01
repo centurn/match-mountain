@@ -27,7 +27,7 @@ int main(int /*argc*/, char */*argv*/[])
     Window window;
     asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
 
-    auto tri = tests::make_triangle();
+    auto tri = tests::makeTriangle();
     auto rot_u = tri->addUniform("World");
 
     auto rdr = SDL_CreateRenderer(

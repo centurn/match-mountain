@@ -26,10 +26,17 @@ void Mesh::render()
     glBindVertexArray(vao);
     program->bind();
     uniforms.apply(program->getID());
-    // TODO: Index Buffer
-    glDrawArrays(GLuint(draw_desc.draw_type)
-                 , draw_desc.offset
-                 , draw_desc.count);checkGL();
+    if(draw_desc.index_buffer != nullptr){
+        glDrawElements(GLuint(draw_desc.draw_type)
+                       , draw_desc.count
+                       , static_cast<GLenum>(draw_desc.index_type)
+                       , reinterpret_cast<const void *>(draw_desc.offset));
+
+    }else{
+        glDrawArrays(GLuint(draw_desc.draw_type)
+                     , draw_desc.offset
+                     , draw_desc.count);checkGL();
+    }
 }
 
 void Mesh::prepareGL()
@@ -53,6 +60,9 @@ void Mesh::prepareGL()
                               , GL_FALSE
                               , static_cast<GLsizei>(i.stride)
                               , reinterpret_cast<const void *>(i.offset)); checkGL();
+    }
+    if(draw_desc.index_buffer != nullptr){
+        draw_desc.index_buffer->bind();
     }
 }
 

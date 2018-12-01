@@ -6,7 +6,11 @@
 namespace asg{
 
 namespace tests{
-std::unique_ptr<Mesh> make_triangle();
+
+std::unique_ptr<Mesh> makeTriangle();
+
+std::unique_ptr<Mesh> makeCube();
+
 }
 
 }
