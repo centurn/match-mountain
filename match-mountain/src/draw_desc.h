@@ -21,8 +21,8 @@ enum class DrawType{
 struct DrawDescr{
     DrawType draw_type;
     Rsize count;
-    std::shared_ptr<AttribBuffer> index_buffer;
-    ptrdiff_t offset;
+    std::shared_ptr<AttribBuffer> index_buffer = nullptr;
+    Rint offset = 0;
 };
 
 }

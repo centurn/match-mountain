@@ -59,6 +59,7 @@ int main(int /*argc*/, char */*argv*/[])
     tri.setProgram(std::make_shared<asg::ShaderProgram>(vertexSource, fragmentSource));
     tri.addAttribute(AttribDescr::fromArray("position", vertices, 2));
     tri.addAttribute(AttribDescr::fromArray("color", colors, 3));
+    tri.setDrawDescription(DrawDescr{DrawType::Triangles, 3});
     auto rot_u = tri.addUniform("World");
 
     auto rdr = SDL_CreateRenderer(
@@ -86,9 +87,7 @@ int main(int /*argc*/, char */*argv*/[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         background.render();
-        tri.draw();
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        tri.render();
 
         SDL_GL_SwapWindow(window.getNativeWindow());
     };
@@ -99,6 +98,8 @@ int main(int /*argc*/, char */*argv*/[])
     while(!quit)
         main_loop();
 #endif
+
+    SDL_DestroyRenderer(rdr);
 
     return 0;
 }

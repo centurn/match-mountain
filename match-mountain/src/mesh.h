@@ -18,7 +18,7 @@ public:
     size_t addAttribute(T&& attr);
 
     template<typename T>
-    void setDrawDescription(DrawDescr desc);
+    void setDrawDescription(T&& desc);
 
     inline void setProgram(const std::shared_ptr<ShaderProgram>& prog);
     inline const std::shared_ptr<ShaderProgram>& getProgram() const;
@@ -27,7 +27,7 @@ public:
 
     inline UniformHandler addUniform(const std::string name);
 
-    void draw();
+    void render();
 
 private:
     void prepareGL();
@@ -48,7 +48,7 @@ size_t Mesh::addAttribute(T&& attr){
 }
 
 template<typename T>
-void Mesh::setDrawDescription(DrawDescr desc){
+void Mesh::setDrawDescription(T&& desc){
     draw_desc = desc;
 }
 

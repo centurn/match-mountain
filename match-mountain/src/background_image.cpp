@@ -39,6 +39,7 @@ BackgroundImage::BackgroundImage(const char *src)
     mesh.addAttribute(AttribDescr::fromArray("position", vertices, 2));
     mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords, 2));
     mesh.setTexture("uTexture", std::make_shared<Texture>(src));
+    mesh.setDrawDescription(DrawDescr{DrawType::TriangleStrip, 4});
 }
 
 BackgroundImage::~BackgroundImage()
@@ -47,8 +48,7 @@ BackgroundImage::~BackgroundImage()
 
 void BackgroundImage::render()
 {
-    mesh.draw();
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);checkGL();
+    mesh.render();
 }
 
 

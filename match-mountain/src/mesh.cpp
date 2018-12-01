@@ -19,13 +19,17 @@ void Mesh::setTexture(const std::string &name, const std::shared_ptr<Texture> &t
     uni.set(tex);
 }
 
-void Mesh::draw()
+void Mesh::render()
 {
     prepareGL();
 
     glBindVertexArray(vao);
     program->bind();
     uniforms.apply(program->getID());
+    // TODO: Index Buffer
+    glDrawArrays(GLuint(draw_desc.draw_type)
+                 , draw_desc.offset
+                 , draw_desc.count);checkGL();
 }
 
 void Mesh::prepareGL()
