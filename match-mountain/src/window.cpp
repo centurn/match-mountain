@@ -40,7 +40,12 @@ Window::Window()
     uint32_t flags = SDL_WINDOW_OPENGL /*| SDL_WINDOW_FULLSCREEN*/;
 
     log_i("Creating SDL Window...");
-    sdl_window.reset(SDL_CreateWindow("Test!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mode.w, mode.h, flags));
+    sdl_window.reset(SDL_CreateWindow("Test!"
+                                      , SDL_WINDOWPOS_UNDEFINED
+                                      , SDL_WINDOWPOS_UNDEFINED
+                                      , 600
+                                      , 600
+                                      , flags));
     if (sdl_window == nullptr) {
       PANIC("SDL_CreateWindow Failed. Error: %s", SDL_GetError());
     }

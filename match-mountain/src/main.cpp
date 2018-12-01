@@ -27,14 +27,21 @@ int main(int /*argc*/, char */*argv*/[])
     Window window;
     asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
 
-    auto tri = tests::makeTriangle();
+    auto tri = tests::makeCube();
     auto rot_u = tri->addUniform("World");
 
     auto rdr = SDL_CreateRenderer(
-        window.getNativeWindow(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+        window.getNativeWindow()
+        , -1
+        , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
     float angle = 0;
     bool quit = false;
+
+    glFrontFace( GL_CCW );
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+
     loop = [&]
     {
         SDL_Event e;
@@ -47,7 +54,7 @@ int main(int /*argc*/, char */*argv*/[])
         }
 
         angle += 3.14159f/512;
-        glm::mat4 mt = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, 0.0});
+        glm::mat4 mt = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.5, 1.0, 0.0});
         rot_u.set(mt);
 
         // Clear the screen
