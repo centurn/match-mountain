@@ -2,6 +2,7 @@
 
 #include "bitmap.h"
 #include "mesh.h"
+#include "asg_gl.h"
 
 // Shader sources
 static const char* vs_src = R"(
@@ -53,7 +54,9 @@ BackgroundImage::~BackgroundImage()
 
 void BackgroundImage::render()
 {
+    glDepthMask(GL_FALSE);
     mesh.render();
+    glDepthMask(GL_TRUE);
 }
 
 

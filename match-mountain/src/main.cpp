@@ -41,6 +41,17 @@ int main(int /*argc*/, char */*argv*/[])
     glFrontFace( GL_CCW );
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
+    glm::mat4 proj = glm::perspective(glm::radians(90.f)
+                                      , float(window.getWidth())/window.getHeight()
+                                      , 0.1f
+                                      , 120.f);
+    //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
+    glm::mat4 view = glm::lookAt(glm::vec3(0.f, 0.f, 5.f)
+                                 , glm::vec3(0.f, 0.f, 0.f)
+                                 , glm::vec3(0, 1, 0));
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     loop = [&]
     {
@@ -54,14 +65,21 @@ int main(int /*argc*/, char */*argv*/[])
         }
 
         angle += 3.14159f/512;
-        glm::mat4 mt = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.5, 1.0, 0.0});
-        rot_u.set(mt);
 
         // Clear the screen
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         background.render();
+        glm::mat4 rot = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, -0.3});
+        glm::mat4 mt = proj*view*rot;
+        rot_u.set(mt);
+        tri->render();
+        mt = proj*view*glm::translate(rot, glm::vec3(-1.0, 0.5, 0));
+        rot_u.set(mt);
+        tri->render();
+        mt = proj*view*glm::translate(rot, glm::vec3(-2.0, 1.0, 0));
+        rot_u.set(mt);
         tri->render();
 
         SDL_GL_SwapWindow(window.getNativeWindow());

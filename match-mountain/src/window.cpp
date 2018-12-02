@@ -43,8 +43,8 @@ Window::Window()
     sdl_window.reset(SDL_CreateWindow("Test!"
                                       , SDL_WINDOWPOS_UNDEFINED
                                       , SDL_WINDOWPOS_UNDEFINED
-                                      , 600
-                                      , 600
+                                      , mode.w
+                                      , mode.h
                                       , flags));
     if (sdl_window == nullptr) {
       PANIC("SDL_CreateWindow Failed. Error: %s", SDL_GetError());
