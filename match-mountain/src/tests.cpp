@@ -1,6 +1,7 @@
 #include "tests.h"
 #include "shader_program.h"
 #include "glm/vec3.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace asg{
 
@@ -126,6 +127,59 @@ std::unique_ptr<Mesh> makeCube()
     auto rot_u = tri->addUniform("World");
     rot_u.set(glm::mat4(1.0));
     return tri;
+}
+
+CubeTest::CubeTest()
+    : background(ASSETS_DIR"37800 IMG_2844.jpg")
+    , cube(tests::makeCube())
+    , u_world(cube->addUniform("World"))
+    , u_mvp(cube->addUniform("MVP"))
+{
+}
+
+CubeTest::~CubeTest()
+{
+}
+
+void CubeTest::resize(int w, int h)
+{
+    AppletBase::resize(w, h);
+    glm::mat4 proj = glm::perspective(glm::radians(90.f)
+                                      , float(w)/h
+                                      , 0.1f
+                                      , 120.f);
+    //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
+    glm::mat4 view = glm::lookAt(glm::vec3(0.f, -5.f, 5.f)
+                                 , glm::vec3(0.f, 0.f, 0.f)
+                                 , glm::vec3(0, 1, 0));
+    viewproj = proj*view;
+}
+
+void CubeTest::render()
+{
+    angle += 3.14159f/512;
+
+    background.render();
+    glm::mat4 rot = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, 0.0});
+    mat4 world = rot;
+    glm::mat4 mt = viewproj*rot;
+    u_world.set(world);
+    u_mvp.set(mt);
+    cube->render();
+
+    world = glm::translate(rot, glm::vec3(-1.0, 0.0, 0));
+    mt = viewproj*world;
+    u_mvp.set(mt);
+    u_world.set(world);
+    cube->render();
+    cube->render();
+
+    world = glm::translate(rot, glm::vec3(-2.0, 0.0, 0));
+    mt = viewproj*world;
+    u_mvp.set(mt);
+    u_world.set(world);
+    cube->render();
+    cube->render();
 }
 
 }

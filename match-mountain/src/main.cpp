@@ -2,9 +2,6 @@
 #include <functional>
 #include <cmath>
 
-#include "glm/mat4x4.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "window.h"
 #include "background_image.h"
 #include "tests.h"
@@ -25,31 +22,20 @@ void main_loop() { loop(); }
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
-    asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
-
-    auto tri = tests::makeCube();
-    auto u_world = tri->addUniform("World");
-    auto u_mvp = tri->addUniform("MVP");
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow()
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    float angle = 0;
+    tests::CubeTest app;
+    app.resize(window.getWidth(), window.getHeight());
+
     bool quit = false;
 
     glFrontFace( GL_CCW );
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
-    glm::mat4 proj = glm::perspective(glm::radians(90.f)
-                                      , float(window.getWidth())/window.getHeight()
-                                      , 0.1f
-                                      , 120.f);
-    //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
-    glm::mat4 view = glm::lookAt(glm::vec3(0.f, -5.f, 5.f)
-                                 , glm::vec3(0.f, 0.f, 0.f)
-                                 , glm::vec3(0, 1, 0));
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -65,33 +51,11 @@ int main(int /*argc*/, char */*argv*/[])
             }
         }
 
-        angle += 3.14159f/512;
-
         // Clear the screen
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-        background.render();
-        glm::mat4 rot = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, 0.0});
-        mat4 world = rot;
-        glm::mat4 mt = proj*view*rot;
-        u_world.set(world);
-        u_mvp.set(mt);
-        tri->render();
-
-        world = glm::translate(rot, glm::vec3(-1.0, 0.0, 0));
-        mt = proj*view*world;
-        u_mvp.set(mt);
-        u_world.set(world);
-        tri->render();
-        tri->render();
-
-        world = glm::translate(rot, glm::vec3(-2.0, 0.0, 0));
-        mt = proj*view*world;
-        u_mvp.set(mt);
-        u_world.set(world);
-        tri->render();
-        tri->render();
+        app.render();
 
         SDL_GL_SwapWindow(window.getNativeWindow());
     };
