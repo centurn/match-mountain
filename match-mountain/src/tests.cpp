@@ -7,6 +7,22 @@ namespace asg{
 namespace tests{
 
 namespace {
+
+static const char* vs_l = R"(
+    attribute vec4 position;
+    attribute vec3 color;
+    attribute vec3 normal;
+    uniform mat4 World;
+    uniform mat4 MVP;
+    varying vec3 vColor;
+    void main()
+    {
+        vec4 light_dir = normalize(vec4(0., -5.0, 5., 0.));
+        float intensity = max(dot(World*vec4(normal, 0.), light_dir), 0.);
+        vColor = vec3(1., 1., 1.)*intensity;
+      gl_Position = MVP * vec4(position.xyz, 1.0);
+    })";
+
 static const char* vertexSource = R"(
     attribute vec4 position;
     attribute vec3 color;
@@ -36,10 +52,14 @@ std::unique_ptr<Mesh> makeTriangle()
     float colors[] = {1.0f, 0.0f, 0.0f
                        , 0.0, 1.0f, 0.0f
                        , 0.0f, 0.0f, 1.0f};
+    float normals[] = {0.0f, 0.0f, -1.0f
+                       , 0.0, 0.0f, -1.0f
+                       , 0.0f, 0.0f, -1.0f};
     auto tri = std::make_unique<Mesh>();
-    tri->setProgram(std::make_shared<asg::ShaderProgram>(vertexSource, fragmentSource));
+    tri->setProgram(std::make_shared<asg::ShaderProgram>(vs_l, fragmentSource));
     tri->addAttribute(AttribDescr::fromArray("position", vertices, 2));
-    tri->addAttribute(AttribDescr::fromArray("color", colors, 3));
+//    tri->addAttribute(AttribDescr::fromArray("color", colors, 3));
+    tri->addAttribute(AttribDescr::fromArray("normal", normals, 3));
     tri->setDrawDescription(DrawDescr{DrawType::Triangles, 3});
     auto rot_u = tri->addUniform("World");
     rot_u.set(glm::mat4(1.0));
@@ -94,9 +114,10 @@ std::unique_ptr<Mesh> makeCube()
         i = glm::normalize(i);
     }
     auto tri = std::make_unique<Mesh>();
-    tri->setProgram(std::make_shared<asg::ShaderProgram>(vertexSource, fragmentSource));
+    tri->setProgram(std::make_shared<asg::ShaderProgram>(vs_l, fragmentSource));
     tri->addAttribute(AttribDescr::fromArray("position", vertices, 3));
-    tri->addAttribute(AttribDescr::fromArray("color", colors, 3));
+//    tri->addAttribute(AttribDescr::fromArray("color", colors, 3));
+    tri->addAttribute(AttribDescr::fromArray("normal", normals, 3));
     tri->setDrawDescription(DrawDescr{DrawType::Triangles
                                       , sizeof(indices)/2
                                       , std::make_shared<AttribBuffer>(make_span(indices), false)

@@ -28,7 +28,8 @@ int main(int /*argc*/, char */*argv*/[])
     asg::BackgroundImage background(ASSETS_DIR"37800 IMG_2844.jpg");
 
     auto tri = tests::makeCube();
-    auto rot_u = tri->addUniform("World");
+    auto u_world = tri->addUniform("World");
+    auto u_mvp = tri->addUniform("MVP");
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow()
@@ -46,7 +47,7 @@ int main(int /*argc*/, char */*argv*/[])
                                       , 0.1f
                                       , 120.f);
     //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
-    glm::mat4 view = glm::lookAt(glm::vec3(0.f, 0.f, 5.f)
+    glm::mat4 view = glm::lookAt(glm::vec3(0.f, -5.f, 5.f)
                                  , glm::vec3(0.f, 0.f, 0.f)
                                  , glm::vec3(0, 1, 0));
 
@@ -71,15 +72,25 @@ int main(int /*argc*/, char */*argv*/[])
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         background.render();
-        glm::mat4 rot = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, -0.3});
+        glm::mat4 rot = glm::rotate(glm::mat4(1.0), angle, glm::vec3{0.0, 1.0, 0.0});
+        mat4 world = rot;
         glm::mat4 mt = proj*view*rot;
-        rot_u.set(mt);
+        u_world.set(world);
+        u_mvp.set(mt);
         tri->render();
-        mt = proj*view*glm::translate(rot, glm::vec3(-1.0, 0.5, 0));
-        rot_u.set(mt);
+
+        world = glm::translate(rot, glm::vec3(-1.0, 0.0, 0));
+        mt = proj*view*world;
+        u_mvp.set(mt);
+        u_world.set(world);
         tri->render();
-        mt = proj*view*glm::translate(rot, glm::vec3(-2.0, 1.0, 0));
-        rot_u.set(mt);
+        tri->render();
+
+        world = glm::translate(rot, glm::vec3(-2.0, 0.0, 0));
+        mt = proj*view*world;
+        u_mvp.set(mt);
+        u_world.set(world);
+        tri->render();
         tri->render();
 
         SDL_GL_SwapWindow(window.getNativeWindow());
