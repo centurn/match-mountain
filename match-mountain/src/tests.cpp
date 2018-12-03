@@ -1,5 +1,6 @@
 #include "tests.h"
 #include "shader_program.h"
+#include "glm/vec3.hpp"
 
 namespace asg{
 
@@ -47,14 +48,14 @@ std::unique_ptr<Mesh> makeTriangle()
 
 std::unique_ptr<Mesh> makeCube()
 {
-    float vertices[] = {-0.5f, 0.5f, -0.5
-                        , 0.5f, 0.5, -0.5
-                        ,-0.5, -0.5, -0.5
-                        , 0.5, -0.5, -0.5
-                        ,-0.5f, 0.5f, 0.5
-                        , 0.5f, 0.5, 0.5
-                        ,-0.5, -0.5, 0.5
-                        , 0.5, -0.5, 0.5};
+    vec3 vertices[] = { {-0.5f, 0.5f, -0.5}
+                        ,{ 0.5f, 0.5, -0.5}
+                        ,{-0.5, -0.5, -0.5}
+                        ,{ 0.5, -0.5, -0.5}
+                        ,{-0.5f, 0.5f, 0.5}
+                        ,{ 0.5f, 0.5, 0.5 }
+                        ,{-0.5, -0.5, 0.5 }
+                        ,{ 0.5, -0.5, 0.5 }};
     Rushort indices[] = { 2, 1, 0
                       , 1, 2, 3
                       , 1, 3, 5
@@ -68,14 +69,30 @@ std::unique_ptr<Mesh> makeCube()
                       , 4, 5, 6
                       , 6, 5, 7};
 
-    float colors[] =   {1.0f, 0.0f, 0.0f
-                       , 0.0, 1.0f, 0.0f
-                       , 0.0f, 0.0f, 1.0f
-                       , 1.0f, 0.0f, 0.0f
-                       , 0.0f, 0.0f, 1.0f
-                       , 1.0f, 0.0f, 0.0f
-                       , 0.0, 1.0f, 0.0f
-                       , 0.0f, 0.0f, 1.0f};
+    vec3 colors[] =   { {1.0f, 0.0f, 0.0f }
+                       ,{ 0.0, 1.0f, 0.0f }
+                       ,{ 0.0f, 0.0f, 1.0f}
+                       ,{ 1.0f, 0.0f, 0.0f}
+                       ,{ 0.0f, 0.0f, 1.0f}
+                       ,{ 1.0f, 0.0f, 0.0f}
+                       ,{ 0.0, 1.0f, 0.0f }
+                       ,{ 0.0f, 0.0f, 1.0f} };
+    vec3 normals[std::size(colors)];
+    static_assert (sizeof(vertices) == sizeof(normals)
+                  && sizeof(vertices) == sizeof(colors), "");
+    for(auto& i: normals){
+        i = vec3(0.f);
+    }
+    for(size_t j = 0; j < std::size(indices); j += 3){
+        auto perpendicular = glm::cross(vertices[indices[j+1]] - vertices[indices[j]]
+                ,vertices[indices[j+2]] - vertices[indices[j]]);
+        for(auto k = j; k != j+3; ++k){
+            normals[indices[k]] += perpendicular;
+        }
+    }
+    for(auto& i: normals){
+        i = glm::normalize(i);
+    }
     auto tri = std::make_unique<Mesh>();
     tri->setProgram(std::make_shared<asg::ShaderProgram>(vertexSource, fragmentSource));
     tri->addAttribute(AttribDescr::fromArray("position", vertices, 3));

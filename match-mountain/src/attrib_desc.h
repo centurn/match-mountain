@@ -3,8 +3,14 @@
 #include "attrib_buffer.h"
 #include <memory>
 #include "asg_render_predef.h"
+#include "glm/vec3.hpp"
 
 namespace asg {
+
+template <int N>
+struct DeduceScalarType<glm::vec<N, float, glm::defaultp>>{
+    static constexpr ScalarType scalar_type = ScalarType::Float;
+};
 
 struct AttribDescr{
     std::string name;
