@@ -37,7 +37,7 @@ private:
     std::string reason;
 };
 
-// For now, just assert, but maybe throw in the future
+// Run-time validation. For now, just assert, but probably throw in the future
 #define VALIDATE(Expr) assert(Expr);
 #define FAIL() assert(0);
 

@@ -3,8 +3,8 @@
 #include <cmath>
 
 #include "window.h"
-#include "background_image.h"
 #include "tests.h"
+#include "geo_coords.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -22,6 +22,10 @@ void main_loop() { loop(); }
 int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
+
+    geo::Position a{{35.143118}, {127.681800}};
+    log_d("Lat deg: %d, min: %d, sec: %d\n", a.lat.deg(), a.lat.minute(), a.lat.sec());
+    log_d("Lon deg: %d, min: %d, sec: %d\n", a.lon.deg(), a.lon.minute(), a.lon.sec());
 
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow()

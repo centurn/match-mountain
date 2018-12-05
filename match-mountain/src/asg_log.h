@@ -8,7 +8,7 @@
 #define log_e(...) std::fprintf(stderr, __VA_ARGS__)
 
 // Normal info log - print always
-#define log_i(...) std::printf(__VA_ARGS__)
+#define log_i(...){ std::printf(__VA_ARGS__); fflush (stdout); };
 
 #ifdef NDEBUG
 #define log_d(...)
