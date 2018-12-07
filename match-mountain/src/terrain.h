@@ -7,6 +7,7 @@
 class Terrain
     : public asg::AppletBase
 {
+public:
     Terrain(geo::Position pos);
     virtual ~Terrain() override;
 
@@ -19,4 +20,8 @@ public:
     bool setPosition(geo::Position pos);
 
 private:
+    asg::Mesh terra;
+    asg::UniformHandler u_mvp;
+    glm::mat4 viewproj;
+    glm::vec3 eye_pos;
 };

@@ -4,6 +4,7 @@
 
 #include "window.h"
 #include "tests.h"
+#include "terrain.h"
 #include "geo_coords.h"
 
 #ifdef __EMSCRIPTEN__
@@ -23,16 +24,13 @@ int main(int /*argc*/, char */*argv*/[])
 {
     Window window;
 
-    geo::Position a{{35.143118}, {127.681800}};
-    log_d("Lat deg: %d, min: %d, sec: %d\n", a.lat.deg(), a.lat.minute(), a.lat.sec());
-    log_d("Lon deg: %d, min: %d, sec: %d\n", a.lon.deg(), a.lon.minute(), a.lon.sec());
-
     auto rdr = SDL_CreateRenderer(
         window.getNativeWindow()
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    tests::CubeTest app;
+    geo::Position pos{{35.143118}, {127.681800}};
+    Terrain app(pos);
     app.resize(window.getWidth(), window.getHeight());
 
     bool quit = false;
@@ -41,8 +39,8 @@ int main(int /*argc*/, char */*argv*/[])
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+//    glEnable(GL_DEPTH_TEST);
+//    glDepthFunc(GL_LESS);
 
     loop = [&]
     {
@@ -56,7 +54,7 @@ int main(int /*argc*/, char */*argv*/[])
         }
 
         // Clear the screen
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.3f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         app.render();

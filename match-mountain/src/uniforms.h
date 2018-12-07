@@ -37,7 +37,11 @@ private: friend UniformHandler;
 };
 
 class UniformHandler{
-private: friend UniformStorage;
+public:
+    UniformHandler()
+        : location(0)
+        , storage(nullptr)
+    {}
     UniformHandler(size_t location, UniformStorage* storage)
         : location(location)
         , storage(storage)
