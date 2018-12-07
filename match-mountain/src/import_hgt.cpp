@@ -34,12 +34,12 @@ static std::vector<std::byte> readWholeFile(const char* filename){
     file.seekg(0, std::ios::beg);
 
     std::vector<std::byte> result(static_cast<size_t>(size));
-    if (file.read(reinterpret_cast<char*>(result.data())
+    if (!file.read(reinterpret_cast<char*>(result.data())
                   , size))
     {
-        return result;
+        FAIL();
     }
-    FAIL();
+    return result;
 }
 }
 

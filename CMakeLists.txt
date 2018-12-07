@@ -19,7 +19,7 @@ set(LIBS
 
 add_definitions( -DASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/test/" )
 IF (EMSCRIPTEN)
-  SET(CMAKE_CXX_FLAGS "-s USE_SDL=2 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
+  SET(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
 ELSE ()
   add_subdirectory(third-party)
   set(LIBS
