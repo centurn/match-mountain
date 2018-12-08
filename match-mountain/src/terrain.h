@@ -15,6 +15,7 @@ public:
 public:
     void resize(int w, int h) override;
     void render() override;
+    void mouseMove(glm::ivec2 pos, glm::vec2 delta, asg::uint pressed_mask) override;
 
 public:
     bool setPosition(geo::Position pos);
@@ -22,6 +23,7 @@ public:
 private:
     asg::Mesh terra;
     asg::UniformHandler u_mvp;
-    glm::mat4 viewproj;
+    glm::mat4 projection;
     glm::vec3 eye_pos;
+    glm::ivec2 rotation_cam{0,0};// Rotation delta - cumulative in screen coords
 };

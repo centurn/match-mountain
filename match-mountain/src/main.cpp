@@ -15,6 +15,7 @@
 #include <SDL.h>
 
 #include "asg_gl.h"
+
 using namespace asg;
 
 static std::function<void()> loop;
@@ -39,17 +40,22 @@ int main(int /*argc*/, char */*argv*/[])
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
 
-//    glEnable(GL_DEPTH_TEST);
-//    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     loop = [&]
     {
         SDL_Event e;
         while(SDL_PollEvent(&e))
         {
-            if(e.type == SDL_QUIT){
+            switch(e.type){
+            case SDL_QUIT:
                 quit = true;
                 return;
+            case SDL_MOUSEMOTION:
+                app.mouseMove({e.motion.x, e.motion.y}
+                            , {e.motion.xrel, e.motion.yrel}, e.motion.state);
+                break;
             }
         }
 

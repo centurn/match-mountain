@@ -12,6 +12,7 @@ using namespace geo;
 namespace  {
 
 static constexpr double min_extent = 10*1000.0;// 10 km square around the point of interest
+static const float fov = glm::radians(90.0f);
 
 static const char* vs = R"(
     attribute vec4 position;
@@ -55,7 +56,7 @@ struct Vertex{
 // Don't use haversine formula since we are supposed to look from fixed position. And more distant objects need less precision
 static inline glm::vec2 groundCoords(Position origin, Position pos) {
     return{ 111'300.0 * glm::cos(pos.lat.value) * (pos.lon.value - origin.lon.value)
-          , -111'300.0 * (pos.lat.value - origin.lat.value)};
+          , 111'300.0 * (pos.lat.value - origin.lat.value)};
 };
 
 static float eye_height(const ImportHgt& importer, Position pos){
@@ -82,9 +83,8 @@ Terrain::Terrain(Position pos)
     for(int i = rect.i_begin; i != rect.i_end; ++i){
         for(int j = rect.j_begin; j != rect.j_end; ++j, ++cur_vtx){
             float hgt = importer.getPixelHeight(i, j);
-            new (&cur_vtx->position) vec3(
-                groundCoords(pos, importer.getPixelCoords(i, j)),
-                hgt);
+            auto grounds = groundCoords(pos, importer.getPixelCoords(i, j));
+            new (&cur_vtx->position) vec3(grounds.x, hgt, grounds.y);
             new (&cur_vtx->color) vec3(glm::clamp(hgt/1500, 0.f, 1.f)
                                        , 1.f - glm::clamp(hgt/1500, 0.f, 1.f)
                                        , 0.0f);
@@ -137,23 +137,33 @@ Terrain::~Terrain()
 void Terrain::resize(int w, int h)
 {
     AppletBase::resize(w, h);
-    glm::mat4 proj = glm::perspective(glm::radians(90.f)
+    projection = glm::perspective(fov
                                       , float(w)/h
                                       , 2.0f
-                                      , float(min_extent));
+                                      , float(min_extent)*1.5f);
     //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
 //    glm::mat4 view = glm::lookAt(eye_pos
 //                                 , eye_pos + glm::vec3(0.f, 100.f, 0.f)
 //                                 , glm::vec3(0, 1, 0));
-    glm::mat4 view = glm::lookAt(vec3(1000.0, 1000.0, 2000.0)
-                                 , glm::vec3(0.f, 0.f, 400.f)
-                                 , glm::vec3(0, 0, 1));
-    viewproj = proj*view;
 }
 
 void Terrain::render()
 {
+    auto ry = glm::rotate(mat4(1)
+                          , fov*(float(-rotation_cam.x*2)/width)
+                          , vec3(0,1,0));
+    auto rx = glm::rotate(mat4(1)
+                          , fov*(float(-rotation_cam.y*2)/width)
+                          , vec3(1,0,0));
+    mat4 viewproj = projection * rx * ry * glm::translate(mat4(1), -vec3(1000.0, 1000.0, 2000.0));
     u_mvp.set(viewproj);
     terra.render();
+}
+
+void Terrain::mouseMove(glm::ivec2 , glm::vec2 delta, uint pressed_mask)
+{
+    if(pressed_mask & 1){// Left Mouse Button
+        rotation_cam += delta;
+    }
 }
 
