@@ -16,6 +16,7 @@ public:
     void resize(int w, int h) override;
     void render() override;
     void mouseMove(glm::ivec2 pos, glm::vec2 delta, asg::uint pressed_mask) override;
+    void keyDown(int virtual_keycode) override;
 
 public:
     bool setPosition(geo::Position pos);

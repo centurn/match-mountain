@@ -56,6 +56,9 @@ int main(int /*argc*/, char */*argv*/[])
                 app.mouseMove({e.motion.x, e.motion.y}
                             , {e.motion.xrel, e.motion.yrel}, e.motion.state);
                 break;
+            case SDL_KEYDOWN:
+                app.keyDown(e.key.keysym.sym);
+                break;
             }
         }
 

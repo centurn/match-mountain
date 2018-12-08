@@ -71,7 +71,7 @@ Terrain::Terrain(Position pos)
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
 
-    eye_pos = vec3(0.0f, 0.0f, eye_height(importer, pos) + 2.0f);
+    eye_pos = vec3(0.0f, eye_height(importer, pos) + 5.0f, 0.0f);
 
     int j_len = (rect.j_end - rect.j_begin);
     int i_len = (rect.i_end - rect.i_begin);
@@ -155,7 +155,7 @@ void Terrain::render()
     auto rx = glm::rotate(mat4(1)
                           , fov*(float(-rotation_cam.y*2)/width)
                           , vec3(1,0,0));
-    mat4 viewproj = projection * rx * ry * glm::translate(mat4(1), -vec3(1000.0, 1000.0, 2000.0));
+    mat4 viewproj = projection * rx * ry * glm::translate(mat4(1), -eye_pos);
     u_mvp.set(viewproj);
     terra.render();
 }
@@ -164,6 +164,19 @@ void Terrain::mouseMove(glm::ivec2 , glm::vec2 delta, uint pressed_mask)
 {
     if(pressed_mask & 1){// Left Mouse Button
         rotation_cam += delta;
+    }
+}
+
+void Terrain::keyDown(int virtual_keycode)
+{
+//    log_d("%c", virtual_keycode);
+    switch(virtual_keycode){
+    case 'e':
+        eye_pos += vec3(0, 10, 0);
+        break;
+    case 'q':
+        eye_pos += vec3(0, -10, 0);
+        break;
     }
 }
 
