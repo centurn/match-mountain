@@ -22,6 +22,9 @@ public:
     bool setPosition(geo::Position pos);
 
 private:
+    inline glm::mat4 getCamRotation() const;
+
+private:
     asg::Mesh terra;
     asg::UniformHandler u_mvp;
     glm::mat4 projection;

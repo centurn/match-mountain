@@ -149,13 +149,7 @@ void Terrain::resize(int w, int h)
 
 void Terrain::render()
 {
-    auto ry = glm::rotate(mat4(1)
-                          , fov*(float(-rotation_cam.x*2)/width)
-                          , vec3(0,1,0));
-    auto rx = glm::rotate(mat4(1)
-                          , fov*(float(-rotation_cam.y*2)/width)
-                          , vec3(1,0,0));
-    mat4 viewproj = projection * rx * ry * glm::translate(mat4(1), -eye_pos);
+    mat4 viewproj = projection * getCamRotation() * glm::translate(mat4(1), -eye_pos);
     u_mvp.set(viewproj);
     terra.render();
 }
@@ -170,13 +164,45 @@ void Terrain::mouseMove(glm::ivec2 , glm::vec2 delta, uint pressed_mask)
 void Terrain::keyDown(int virtual_keycode)
 {
 //    log_d("%c", virtual_keycode);
+    constexpr float v = 10;
+    auto direction = [this](){
+        auto cam = glm::inverse(getCamRotation()) *glm::vec4(0, 0, -1, 0);
+        return glm::normalize(vec3(cam.x, 0, cam.z));
+    };
     switch(virtual_keycode){
     case 'e':
-        eye_pos += vec3(0, 10, 0);
+        eye_pos += vec3(0, v, 0);
         break;
     case 'q':
-        eye_pos += vec3(0, -10, 0);
+        eye_pos += vec3(0, -v, 0);
+        break;
+    case 'd':{
+        auto dir = direction();
+        eye_pos += vec3(-dir.z, 0, dir.x) * v;
         break;
     }
+    case 'a':{
+        auto dir = direction();
+        eye_pos += vec3(dir.z, 0, -dir.x) * v;
+        break;
+    }
+    case 'w':
+        eye_pos += direction() * v;
+        break;
+    case 's':
+        eye_pos += -direction() * v;
+        break;
+    }
+}
+
+glm::mat4 Terrain::getCamRotation() const
+{
+    auto ry = glm::rotate(mat4(1)
+                          , fov*(float(-rotation_cam.x*2)/width)
+                          , vec3(0,1,0));
+    auto rx = glm::rotate(mat4(1)
+                          , fov*(float(-rotation_cam.y*2)/width)
+                          , vec3(1,0,0));
+    return rx*ry;
 }
 
