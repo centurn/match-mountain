@@ -20,9 +20,10 @@ static const char* fs_src = R"(
     #endif
     varying vec2 vTexCoord;
     uniform sampler2D uTexture;
+    uniform float alpha;
     void main()
     {
-        gl_FragColor = texture2D(uTexture, vTexCoord);
+        gl_FragColor = vec4(texture2D(uTexture, vTexCoord).rgb, alpha);
 //        gl_FragColor = texture2D(uTexture, vec2(0.5, 0.5));
        //gl_FragColor = vec4 (1.0, 1.0, 1.0, 1.0 );
     })";
@@ -46,6 +47,7 @@ BackgroundImage::BackgroundImage(const char *src)
                                       , 6
                                       , std::make_shared<AttribBuffer>(make_span(indices), false)
                                       , ScalarType::UInt});
+    u_apha = mesh.addUniform("alpha");
 }
 
 BackgroundImage::~BackgroundImage()
@@ -55,7 +57,17 @@ BackgroundImage::~BackgroundImage()
 void BackgroundImage::render()
 {
     glDepthMask(GL_FALSE);
+    if(alpha_enabled){
+        glEnable (GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        u_apha.set(0.5f);
+    }else{
+        u_apha.set(1.0f);
+    }
     mesh.render();
+    if(alpha_enabled){
+        glDisable (GL_BLEND);
+    }
     glDepthMask(GL_TRUE);
 }
 

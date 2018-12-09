@@ -18,7 +18,6 @@ public:
     void render() override;
     void mouseMove(glm::ivec2 pos, glm::vec2 delta, asg::uint pressed_mask) override;
     void keyDown(int virtual_keycode) override;
-    void keyUp(int virtual_keycode) override;
 
 public:
     bool setPosition(geo::Position pos);
@@ -35,4 +34,5 @@ private:
 
     asg::BackgroundImage ref_image;
     bool ref_image_enabled = false;
+    bool ref_image_blend = true;
 };

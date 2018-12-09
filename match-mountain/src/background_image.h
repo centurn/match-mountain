@@ -18,8 +18,13 @@ public:
     ~BackgroundImage();
 
     void render();
+    void enableBlending(bool enable){
+        alpha_enabled = enable;
+    }
 private:
     Mesh mesh;
+    bool alpha_enabled = true;
+    asg::UniformHandler u_apha;
 };
 
 }

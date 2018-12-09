@@ -12,7 +12,7 @@ using namespace geo;
 namespace  {
 
 static constexpr double min_extent = 20*1000.0;// 10 km square around the point of interest
-static const float fov = glm::radians(30.0f);
+static const float fov = glm::radians(20.0f);
 
 static const char* vs = R"(
     attribute vec4 position;
@@ -221,14 +221,12 @@ void Terrain::keyDown(int virtual_keycode)
     case 's':
         eye_pos += -direction() * v;
         break;
-    }
-}
-
-void Terrain::keyUp(int virtual_keycode)
-{
-    switch(virtual_keycode){
     case 'i':
         ref_image_enabled = !ref_image_enabled;
+        break;
+    case 'o':
+        ref_image_blend = !ref_image_blend;
+        ref_image.enableBlending(ref_image_blend);
         break;
     }
 }
