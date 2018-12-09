@@ -32,6 +32,7 @@ int main(int /*argc*/, char */*argv*/[])
 
     //geo::Position pos{{37.618758}, {-3.747283}};
 //    geo::Position pos{{46.512088}, {11.232680}};
+
     geo::Position pos{{46.521945}, {11.228202}};
     Terrain app(pos);
     app.resize(window.getWidth(), window.getHeight());
@@ -57,6 +58,9 @@ int main(int /*argc*/, char */*argv*/[])
             case SDL_MOUSEMOTION:
                 app.mouseMove({e.motion.x, e.motion.y}
                             , {e.motion.xrel, e.motion.yrel}, e.motion.state);
+                break;
+            case SDL_MOUSEWHEEL:
+                app.mouseWheel({e.wheel.x, e.wheel.y});
                 break;
             case SDL_KEYDOWN:
                 app.keyDown(e.key.keysym.sym);

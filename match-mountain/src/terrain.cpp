@@ -12,7 +12,6 @@ using namespace geo;
 namespace  {
 
 static constexpr double min_extent = 20*1000.0;// 10 km square around the point of interest
-static const float fov = glm::radians(20.0f);
 
 static const char* vs = R"(
     attribute vec4 position;
@@ -163,18 +162,14 @@ Terrain::~Terrain()
 void Terrain::resize(int w, int h)
 {
     AppletBase::resize(w, h);
-    projection = glm::perspective(fov
-                                      , float(w)/h
-                                      , 2.0f
-                                      , float(min_extent)*1.5f);
-    //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
-//    glm::mat4 view = glm::lookAt(eye_pos
-//                                 , eye_pos + glm::vec3(0.f, 100.f, 0.f)
-//                                 , glm::vec3(0, 1, 0));
 }
 
 void Terrain::render()
 {
+    mat4 projection = glm::perspective(vfov
+                                      , float(width)/height
+                                      , 2.0f
+                                      , float(min_extent)*1.5f);
     mat4 viewproj = projection * getCamRotation() * glm::translate(mat4(1), -eye_pos);
     u_mvp.set(viewproj);
     terra.render();
@@ -183,10 +178,17 @@ void Terrain::render()
     }
 }
 
-void Terrain::mouseMove(glm::ivec2 , glm::vec2 delta, uint pressed_mask)
+void Terrain::mouseWheel(glm::ivec2 delta)
+{
+    vfov *= 1.0f + (-delta.y * 0.03f);
+    vfov = glm::clamp(vfov, glm::radians(5.f), glm::radians(120.f));
+}
+
+void Terrain::mouseMove(glm::ivec2 , glm::ivec2 delta, uint pressed_mask)
 {
     if(pressed_mask & 1){// Left Mouse Button
-        rotation_cam += delta;
+        rotation_cam += glm::vec2(hfov()*(float(-delta.x)/width)
+                             , vfov*(float(-delta.y)/height));
     }
 }
 
@@ -234,11 +236,16 @@ void Terrain::keyDown(int virtual_keycode)
 glm::mat4 Terrain::getCamRotation() const
 {
     auto ry = glm::rotate(mat4(1)
-                          , fov*(float(-rotation_cam.x*2)/width)
+                          , rotation_cam.x
                           , vec3(0,1,0));
     auto rx = glm::rotate(mat4(1)
-                          , fov*(float(-rotation_cam.y*2)/width)
+                          , rotation_cam.y
                           , vec3(1,0,0));
     return rx*ry;
+}
+
+float Terrain::hfov() const
+{
+    return vfov * width / height;
 }
 

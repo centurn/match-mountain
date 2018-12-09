@@ -16,7 +16,8 @@ public:
 public:
     void resize(int w, int h) override;
     void render() override;
-    void mouseMove(glm::ivec2 pos, glm::vec2 delta, asg::uint pressed_mask) override;
+    void mouseMove(glm::ivec2 pos, glm::ivec2 delta, asg::uint pressed_mask) override;
+    void mouseWheel(glm::ivec2 delta) override;
     void keyDown(int virtual_keycode) override;
 
 public:
@@ -24,13 +25,14 @@ public:
 
 private:
     inline glm::mat4 getCamRotation() const;
+    inline float hfov() const;
 
 private:
     asg::Mesh terra;
     asg::UniformHandler u_mvp;
-    glm::mat4 projection;
     glm::vec3 eye_pos;
-    glm::ivec2 rotation_cam{0,0};// Rotation delta - cumulative in screen coords
+    float vfov{glm::radians(20.f)};
+    glm::vec2 rotation_cam{0,0};// Rotation delta - cumulative in radians
 
     asg::BackgroundImage ref_image;
     bool ref_image_enabled = false;

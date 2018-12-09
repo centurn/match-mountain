@@ -21,7 +21,8 @@ public:
     virtual void render() = 0;
 //    virtual void mouseDown(int idx, int x, MouseButton btn){}
 //    virtual void mouseUp(int idx, int x, MouseButton btn){}
-    virtual void mouseMove(glm::ivec2 pos, glm::vec2 delta, uint pressed_mask){}
+    virtual void mouseMove(glm::ivec2 pos, glm::ivec2 delta, uint pressed_mask){}
+    virtual void mouseWheel(glm::ivec2 delta){}
 
     // Key Pressed/Released events
     // Currently support only virtual keys.
