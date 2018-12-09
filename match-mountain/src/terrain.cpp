@@ -71,7 +71,7 @@ Terrain::Terrain(Position pos)
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
 
-    eye_pos = vec3(0.0f, eye_height(importer, pos) + 5.0f, 0.0f);
+    initial_eye_pos = eye_pos = vec3(0.0f, eye_height(importer, pos) + 5.0f, 0.0f);
 
     int j_len = (rect.j_end - rect.j_begin);
     int i_len = (rect.i_end - rect.i_begin);
@@ -201,34 +201,39 @@ void Terrain::keyDown(int virtual_keycode)
         return glm::normalize(vec3(cam.x, 0, cam.z));
     };
     switch(virtual_keycode){
-    case 'e':
+    case 'e':// Up
         eye_pos += vec3(0, v, 0);
         break;
-    case 'q':
+    case 'q':// Down
         eye_pos += vec3(0, -v, 0);
         break;
-    case 'd':{
+    case 'd':{// Strafe right
         auto dir = direction();
         eye_pos += vec3(-dir.z, 0, dir.x) * v;
         break;
     }
-    case 'a':{
+    case 'a':{// Strafe left
         auto dir = direction();
         eye_pos += vec3(dir.z, 0, -dir.x) * v;
         break;
     }
-    case 'w':
+    case 'w':// Forward
         eye_pos += direction() * v;
         break;
-    case 's':
+    case 's':// Basl
         eye_pos += -direction() * v;
         break;
-    case 'i':
+    case 'i':// Toggle display of reference image
         ref_image_enabled = !ref_image_enabled;
         break;
-    case 'o':
+    case 'o':// Toggle blending of reference image
         ref_image_blend = !ref_image_blend;
         ref_image.enableBlending(ref_image_blend);
+        break;
+    case '\r':// Enter - reset to initial position
+        eye_pos = initial_eye_pos;
+        rotation_cam = {0, 0};
+        vfov = {glm::radians(20.f)};
         break;
     }
 }

@@ -31,6 +31,7 @@ private:
     asg::Mesh terra;
     asg::UniformHandler u_mvp;
     glm::vec3 eye_pos;
+    glm::vec3 initial_eye_pos;
     float vfov{glm::radians(20.f)};
     glm::vec2 rotation_cam{0,0};// Rotation delta - cumulative in radians
 
