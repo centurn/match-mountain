@@ -17,13 +17,13 @@ static constexpr int max_hgt_j = 1201;// 'horizontal'/longitudal
 
 
 static std::string makeHgtFilename(Position pos){
-    std::string result;
-    result += pos.lat.deg() >= 0? 'N' : 'S';
-    result += std::to_string(pos.lat.deg());
-    result += pos.lon.deg() >= 0? 'E' : 'W';
-    result += std::to_string(pos.lon.deg());
-    result += ".hgt";
-    return ASSETS_DIR + result;
+    char buff[12];
+    std::snprintf(buff, sizeof(buff), "%c%02d%c%03d.hgt"
+                  , pos.lat.deg() >= 0? 'N' : 'S'
+                  , std::abs(pos.lat.deg())
+                  , pos.lon.deg() >= 0? 'E' : 'W'
+                  , std::abs(pos.lon.deg()));
+    return ASSETS_DIR + std::string(buff);
 }
 
 static std::vector<std::byte> readWholeFile(const char* filename){
@@ -51,7 +51,9 @@ ImportHgt::ImportHgt(Position pos)
     origin.lat.value = pos.lat.deg() > 0
             ? pos.lat.deg() + 1
             : pos.lat.deg();
-    origin.lon.value = pos.lon.deg();
+    origin.lon.value = pos.lon.deg() > 0
+            ? pos.lon.deg()
+            : pos.lon.deg() - 1;
 }
 
 ImportHgt::Region ImportHgt::getPixelRegion(Position center, double min_distance) const
@@ -108,8 +110,9 @@ int ImportHgt::getPixelHeight(int i, int j) const
 std::tuple<int, int> ImportHgt::nearestPixel(Position pos) const
 {
     int i = pos.lat.totalSec() / hgt_resolution;
-    return std::make_tuple(pos.lon.value >= 0? max_hgt_i - i: i
-                           , pos.lon.totalSec() / hgt_resolution);
+    int j = pos.lon.totalSec() / hgt_resolution;
+    return std::make_tuple(i >= 0? max_hgt_i - i: -i
+                           , j >= 0? j : std::abs(j)/*max_hgt_j + j*/);
 }
 
 }

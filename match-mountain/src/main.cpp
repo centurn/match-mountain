@@ -30,7 +30,9 @@ int main(int /*argc*/, char */*argv*/[])
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    geo::Position pos{{35.143118}, {127.681800}};
+    //geo::Position pos{{37.618758}, {-3.747283}};
+//    geo::Position pos{{46.512088}, {11.232680}};
+    geo::Position pos{{46.521945}, {11.228202}};
     Terrain app(pos);
     app.resize(window.getWidth(), window.getHeight());
 
@@ -58,6 +60,9 @@ int main(int /*argc*/, char */*argv*/[])
                 break;
             case SDL_KEYDOWN:
                 app.keyDown(e.key.keysym.sym);
+                break;
+            case SDL_KEYUP:
+                app.keyUp(e.key.keysym.sym);
                 break;
             }
         }

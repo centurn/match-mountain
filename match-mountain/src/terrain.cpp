@@ -11,22 +11,22 @@ using namespace geo;
 
 namespace  {
 
-static constexpr double min_extent = 10*1000.0;// 10 km square around the point of interest
-static const float fov = glm::radians(90.0f);
+static constexpr double min_extent = 20*1000.0;// 10 km square around the point of interest
+static const float fov = glm::radians(30.0f);
 
 static const char* vs = R"(
     attribute vec4 position;
     attribute vec3 color;
-//    attribute vec3 normal;
-  //  uniform mat4 World;
+    attribute vec3 normal;
+    //uniform mat4 World;
     uniform mat4 MVP;
     varying vec3 vColor;
     void main()
     {
-    //    vec4 light_dir = normalize(vec4(0., -5.0, 5., 0.));
-      //  float intensity = max(dot(World*vec4(normal, 0.), light_dir), 0.);
-//        vColor = vec3(1., 1., 1.)*intensity;
-        vColor = color;
+        vec3 light_dir = normalize(vec3(0., 5.0, 5.0));
+        float intensity = max(dot(normal, light_dir), 0.);
+        vColor = color*intensity;
+    //    vColor = color;
       gl_Position = MVP * vec4(position.xyz, 1.0);
     })";
 
@@ -67,6 +67,7 @@ static float eye_height(const ImportHgt& importer, Position pos){
 }
 
 Terrain::Terrain(Position pos)
+    : ref_image(ASSETS_DIR"0_eacb3_f96cc46f_orig.jpeg")
 {
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
@@ -85,8 +86,8 @@ Terrain::Terrain(Position pos)
             float hgt = importer.getPixelHeight(i, j);
             auto grounds = groundCoords(pos, importer.getPixelCoords(i, j));
             new (&cur_vtx->position) vec3(grounds.x, hgt, grounds.y);
-            new (&cur_vtx->color) vec3(glm::clamp(hgt/1500, 0.f, 1.f)
-                                       , 1.f - glm::clamp(hgt/1500, 0.f, 1.f)
+            new (&cur_vtx->color) vec3(glm::clamp(hgt/2000, 0.f, 1.f)
+                                       , 1.f - glm::clamp(hgt/2000, 0.f, 1.f)
                                        , 0.0f);
         }
     }
@@ -107,6 +108,24 @@ Terrain::Terrain(Position pos)
         }
     }
 
+    for(size_t i = 0; i != vertex_count; ++i){
+        vertices[i].normal = vec3(0.f);
+    }
+    IdxType* indices = reinterpret_cast<IdxType*>(ib.data());
+    for(size_t j = 2; j < indices_count; ++j){
+        auto perpendicular = glm::cross(vertices[indices[j-1]].position - vertices[indices[j]].position
+                ,vertices[indices[j-2]].position - vertices[indices[j]].position);
+        if(!(j & 1))
+            perpendicular = -perpendicular;
+        for(auto k = j-2; k != j+1; ++k){
+            vertices[indices[k]].normal += perpendicular;
+        }
+    }
+    for(size_t i = 0; i != vertex_count; ++i){
+        assert(glm::length(vertices[i].normal) > 0);
+        vertices[i].normal = glm::normalize(vertices[i].normal);
+    }
+
     auto vbo = std::make_shared<AttribBuffer>(std::move(vb));
     terra.setProgram(std::make_shared<asg::ShaderProgram>(vs, fs));
     terra.addAttribute(AttribDescr{"position"
@@ -121,6 +140,13 @@ Terrain::Terrain(Position pos)
                                    , 3
                                    , ScalarType::Float
                                    , sizeof (glm::vec3)
+                                   , sizeof(Vertex)
+                       });
+    terra.addAttribute(AttribDescr{"normal"
+                                   , vbo
+                                   , 3
+                                   , ScalarType::Float
+                                   , sizeof (glm::vec3) * 2
                                    , sizeof(Vertex)
                        });
     terra.setDrawDescription(DrawDescr{DrawType::TriangleStrip
@@ -152,6 +178,9 @@ void Terrain::render()
     mat4 viewproj = projection * getCamRotation() * glm::translate(mat4(1), -eye_pos);
     u_mvp.set(viewproj);
     terra.render();
+    if(ref_image_enabled){
+        ref_image.render();
+    }
 }
 
 void Terrain::mouseMove(glm::ivec2 , glm::vec2 delta, uint pressed_mask)
@@ -191,6 +220,15 @@ void Terrain::keyDown(int virtual_keycode)
         break;
     case 's':
         eye_pos += -direction() * v;
+        break;
+    }
+}
+
+void Terrain::keyUp(int virtual_keycode)
+{
+    switch(virtual_keycode){
+    case 'i':
+        ref_image_enabled = !ref_image_enabled;
         break;
     }
 }
