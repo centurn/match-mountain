@@ -9,6 +9,7 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include <emscripten/html5.h>
 #else
 #endif
 
@@ -23,6 +24,16 @@ void main_loop() { loop(); }
 
 int main(int /*argc*/, char */*argv*/[])
 {
+#ifdef __EMSCRIPTEN__
+    EmscriptenFullscreenStrategy fsStrategy = { };
+    fsStrategy.scaleMode = EMSCRIPTEN_FULLSCREEN_SCALE_DEFAULT;
+    fsStrategy.canvasResolutionScaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_HIDEF;
+    fsStrategy.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_NEAREST;
+    fsStrategy.canvasResizedCallback = nullptr;
+    fsStrategy.canvasResizedCallbackUserData = nullptr;
+    emscripten_enter_soft_fullscreen(nullptr, &fsStrategy);
+#endif
+
     Window window;
 
     auto rdr = SDL_CreateRenderer(
