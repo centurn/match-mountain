@@ -27,6 +27,8 @@ public:
 
     inline UniformHandler addUniform(const std::string name);
 
+    inline void makeDirty();
+
     void render();
 
 private:
@@ -39,6 +41,7 @@ private:
     DrawDescr draw_desc;
 
     uint vao = 0;
+    bool dirty = true;
 };
 
 template<typename T>
@@ -64,6 +67,11 @@ const std::shared_ptr<ShaderProgram>& Mesh::getProgram() const
 UniformHandler Mesh::addUniform(const std::string name)
 {
     return uniforms.add(name);
+}
+
+void Mesh::makeDirty()
+{
+    dirty = true;
 }
 
 }

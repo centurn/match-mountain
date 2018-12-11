@@ -6,10 +6,10 @@ AppletBase::~AppletBase()
 {
 }
 
-void AppletBase::resize(int w, int h)
+void AppletBase::resize(glm::ivec2 size)
 {
-    width = w;
-    height = h;
+    width = size.x;
+    height = size.y;
 }
 
 }

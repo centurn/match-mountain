@@ -141,11 +141,11 @@ CubeTest::~CubeTest()
 {
 }
 
-void CubeTest::resize(int w, int h)
+void CubeTest::resize(glm::ivec2 size)
 {
-    AppletBase::resize(w, h);
+    AppletBase::resize(size);
     glm::mat4 proj = glm::perspective(glm::radians(90.f)
-                                      , float(w)/h
+                                      , float(size.y)/size.x
                                       , 0.1f
                                       , 120.f);
     //glm::mat4 proj = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);

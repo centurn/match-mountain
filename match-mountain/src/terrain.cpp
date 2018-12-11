@@ -66,7 +66,7 @@ static float eye_height(const ImportHgt& importer, Position pos){
 }
 
 Terrain::Terrain(Position pos)
-    : ref_image(ASSETS_DIR"0_eacb3_f96cc46f_orig.jpeg")
+    : ref_image(ASSETS_DIR"alp-test.jpeg")
 {
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
@@ -159,9 +159,10 @@ Terrain::~Terrain()
 {
 }
 
-void Terrain::resize(int w, int h)
+void Terrain::resize(glm::ivec2 size)
 {
-    AppletBase::resize(w, h);
+    AppletBase::resize(size);
+    ref_image.fitScreen(float(width)/height);
 }
 
 void Terrain::render()
@@ -180,7 +181,7 @@ void Terrain::render()
 
 void Terrain::mouseWheel(glm::ivec2 delta)
 {
-    vfov *= 1.0f + (-delta.y * 0.03f);
+    vfov *= 1.0f + (-delta.y * 0.02f);
     vfov = glm::clamp(vfov, glm::radians(5.f), glm::radians(120.f));
 }
 

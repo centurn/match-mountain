@@ -19,7 +19,7 @@ class CubeTest
 public:
     CubeTest();
     virtual ~CubeTest() override;
-    virtual void resize(int w, int h) override;
+    virtual void resize(glm::ivec2 size) override;
     virtual void render() override;
 private:
     BackgroundImage background;

@@ -31,18 +31,21 @@ static const char* fs_src = R"(
 namespace asg{
 
 namespace{
-static float vertices[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
-static float tex_coords[] = {0.0f, 1.0f,  1.0f,  1.0,   0.0f, 0.0f, 1.0f, 0.0f};
-static Ruint indices[] = {0, 1, 2, 2, 1, 3};
-//static Rushort indices[] = {0, 2, 1, 1, 2, 3};
+static const vec2 vertices[] = {{-1.0f, -1.0f}, {1.0f, -1.0f}, {-1.0f, 1.0f}, {1.0f, 1.0f}};
+static const vec2 tex_coords[] = {{0.0f, 1.0f},  {1.0f,  1.0},  {0.0f, 0.0f}, {1.0f, 0.0f}};
+static const Ruint indices[] = {0, 1, 2, 2, 1, 3};
 }
 
 BackgroundImage::BackgroundImage(const char *src)
 {
+    auto texture = std::make_shared<Texture>(src);
+    texture_aspect = float(texture->getBitmap().getWidth()) / texture->getBitmap().getHeight();
     mesh.setProgram(std::make_shared<asg::ShaderProgram>(vs_src, fs_src));
-    mesh.addAttribute(AttribDescr::fromArray("position", vertices, 2));
+    auto positions_attr = AttribDescr::fromArray("position", vertices, 2);
+    positions = positions_attr.buff;
+    mesh.addAttribute(positions_attr);
     mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords, 2));
-    mesh.setTexture("uTexture", std::make_shared<Texture>(src));
+    mesh.setTexture("uTexture", texture);
     mesh.setDrawDescription(DrawDescr{DrawType::Triangles
                                       , 6
                                       , std::make_shared<AttribBuffer>(make_span(indices), false)
@@ -69,6 +72,27 @@ void BackgroundImage::render()
         glDisable (GL_BLEND);
     }
     glDepthMask(GL_TRUE);
+}
+
+void BackgroundImage::fitScreen(float screen_aspect)
+{
+    std::array<vec2, std::size(vertices)> pos;
+    std::copy(std::begin(vertices), std::end(vertices), std::begin(pos));
+    int stretch_axis;
+    float stretch_factor;
+    if(screen_aspect > texture_aspect){
+        stretch_axis = 0;
+        stretch_factor = texture_aspect/screen_aspect;
+    }else{
+        stretch_axis = 1;
+        stretch_factor = screen_aspect/texture_aspect;
+    }
+
+    for(auto& i: pos){
+        i[stretch_axis] *= stretch_factor;
+    }
+    positions->set(make_span(pos));
+    mesh.makeDirty();
 }
 
 

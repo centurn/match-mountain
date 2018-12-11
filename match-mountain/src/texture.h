@@ -12,6 +12,9 @@ public:
     explicit Texture(const char* src);
 
     void bind();
+    const Bitmap& getBitmap() const{
+        return bmp;
+    }
 
 private:
     void prepareGL();

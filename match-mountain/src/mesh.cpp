@@ -11,6 +11,7 @@ Mesh::Mesh()
 
 Mesh::~Mesh()
 {
+    glDeleteVertexArrays(1, &vao);
 }
 
 void Mesh::setTexture(const std::string &name, const std::shared_ptr<Texture> &tex)
@@ -41,10 +42,13 @@ void Mesh::render()
 
 void Mesh::prepareGL()
 {
-    if(vao != 0)
-        return;// Assume it's properly initialized already
+    if(!dirty)
+        return;
+    dirty = false;
 
-    glGenVertexArrays(1, &vao);checkGL();
+    if(vao == 0){
+        glGenVertexArrays(1, &vao);checkGL();
+    }
     glBindVertexArray(vao);checkGL();
 
     program->bind();

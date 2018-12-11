@@ -14,7 +14,7 @@ public:
 
     // AppletBase interface
 public:
-    void resize(int w, int h) override;
+    void resize(glm::ivec2 size) override;
     void render() override;
     void mouseMove(glm::ivec2 pos, glm::ivec2 delta, asg::uint pressed_mask) override;
     void mouseWheel(glm::ivec2 delta) override;

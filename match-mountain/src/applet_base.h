@@ -16,8 +16,8 @@ class AppletBase{
 public:
     virtual ~AppletBase();
 
-    // Always arrives before 1st render
-    virtual void resize(int w, int h);
+    // 1st call to resize() always arrives before 1st render
+    virtual void resize(glm::ivec2 size);
     virtual void render() = 0;
 //    virtual void mouseDown(int idx, int x, MouseButton btn){}
 //    virtual void mouseUp(int idx, int x, MouseButton btn){}

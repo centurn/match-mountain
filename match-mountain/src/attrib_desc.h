@@ -4,6 +4,7 @@
 #include <memory>
 #include "asg_render_predef.h"
 #include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 
 namespace asg {
 
@@ -28,7 +29,7 @@ struct AttribDescr{
               name
             , std::make_shared<AttribBuffer>(make_span(src))
             , num_components
-            , DeduceScalarType<T>::scalar_type
+            , DeduceScalarType<typename std::remove_cv<T>::type>::scalar_type
             , 0
             , 0
         };

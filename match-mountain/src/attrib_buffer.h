@@ -18,20 +18,30 @@ public:
     IMPLICIT AttribBuffer(std::vector<byte>&& src, bool is_vertex = true);
     ~AttribBuffer();
 
-    // Initalizes GL state. Should be called while GL context is bound
-    void init();
+    template<class T, std::ptrdiff_t Extent>
+    void set(span<T, Extent> data);
+
     void bind();
 private:
     AttribBuffer(const byte* src, size_t extent, bool is_vertex);
+
+    void set(const byte* src, size_t extent);
+    void init();
     std::vector<byte> buff;
-    bool is_vertex;
     BufferID id_gl;
+    bool is_vertex;
+    bool dirty = true;// Needs to upload data to GL
 };
 
 template<class T, std::ptrdiff_t Extent>
 AttribBuffer::AttribBuffer(span<T, Extent> src, bool is_vertex)
     : AttribBuffer{reinterpret_cast<const byte*>(src.data()), src.size_bytes(), is_vertex}
 {
+}
+
+template<class T, std::ptrdiff_t Extent>
+void AttribBuffer::set(span<T, Extent> data){
+    set(reinterpret_cast<const byte*>(data.data()), data.size_bytes());
 }
 
 }// namespace asg

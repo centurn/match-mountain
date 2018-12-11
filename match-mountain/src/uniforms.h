@@ -10,6 +10,7 @@ namespace asg{
 
 using glm::mat4;
 using glm::vec3;
+using glm::vec2;
 
 class UniformHandler;
 

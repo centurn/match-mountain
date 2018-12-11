@@ -46,8 +46,8 @@ int main(int /*argc*/, char */*argv*/[])
 
     geo::Position pos{{46.521945}, {11.228202}};
     Terrain app(pos);
-    app.resize(window.getWidth(), window.getHeight());
-
+    glm::ivec2 wnd_size{window.getWidth(), window.getHeight()};
+    app.resize(wnd_size);
     bool quit = false;
 
     glFrontFace( GL_CCW );
@@ -66,12 +66,26 @@ int main(int /*argc*/, char */*argv*/[])
             case SDL_QUIT:
                 quit = true;
                 return;
+            case SDL_WINDOWEVENT:
+                if(e.window.event == SDL_WINDOWEVENT_RESIZED || e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
+                    glm::ivec2 new_size{e.window.data1, e.window.data2};
+                    if(new_size != wnd_size){
+                        wnd_size = new_size;
+                        glViewport(0,0, wnd_size.x, wnd_size.y); checkGL();
+                        app.resize(new_size);
+                    }
+                }
+                break;
             case SDL_MOUSEMOTION:
                 app.mouseMove({e.motion.x, e.motion.y}
                             , {e.motion.xrel, e.motion.yrel}, e.motion.state);
                 break;
             case SDL_MOUSEWHEEL:
+//            #ifdef __EMSCRIPTEN__// WTF in Chrome the wheel events are coming with larger values
+//                app.mouseWheel({e.wheel.x/10, e.wheel.y/10});
+//            #else
                 app.mouseWheel({e.wheel.x, e.wheel.y});
+//            #endif
                 break;
             case SDL_KEYDOWN:
                 app.keyDown(e.key.keysym.sym);

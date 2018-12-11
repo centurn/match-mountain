@@ -37,7 +37,7 @@ Window::Window()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-    uint32_t flags = SDL_WINDOW_OPENGL /*| SDL_WINDOW_FULLSCREEN*/;
+    uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE /*| SDL_WINDOW_FULLSCREEN*/;
 
     log_i("Creating SDL Window...");
     sdl_window.reset(SDL_CreateWindow("Test!"
