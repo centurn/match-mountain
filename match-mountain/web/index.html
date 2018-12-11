@@ -1,5 +1,29 @@
 <html>
 
+<head> 
+  <title>Match-Mountain loading page</title>
+  <style type="text/css" media="screen">
+    svg {
+      display: block;position:fixed;margin: auto;
+    }
+  </style>
+</head>
+<body bgcolor="#4C99FF">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 width="500" height="500" viewBox="0 0 500 500">
+<circle fill="yellow" cx="150" cy = "140" r="20">
+        <animateTransform
+            attributeName="transform"
+            begin="0s"
+            dur="10s"
+            type="rotate"
+            from="90 200 200"
+            to="-270 200 200"
+            repeatCount="indefinite"
+        />
+</circle>
+<circle fill="green" cx="200" cy = "200" r="10"/>
+
 <body>
     <h1>Loading...<h1>
     <canvas class="topleft" id="canvas"></canvas>
