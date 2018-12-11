@@ -20,9 +20,9 @@ static std::string makeHgtFilename(Position pos){
     char buff[12];
     std::snprintf(buff, sizeof(buff), "%c%02d%c%03d.hgt"
                   , pos.lat.deg() >= 0? 'N' : 'S'
-                  , std::abs(pos.lat.deg())
+                  , std::abs(pos.lat.deg()%100)
                   , pos.lon.deg() >= 0? 'E' : 'W'
-                  , std::abs(pos.lon.deg()));
+                  , std::abs(pos.lon.deg()%1000));
     return ASSETS_DIR + std::string(buff);
 }
 

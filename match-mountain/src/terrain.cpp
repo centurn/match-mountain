@@ -3,6 +3,7 @@
 #include "import_hgt.h"
 #include "shader_program.h"
 #include "attrib_buffer.h"
+#include "asg_perf.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -68,6 +69,7 @@ static float eye_height(const ImportHgt& importer, Position pos){
 Terrain::Terrain(Position pos)
     : ref_image(ASSETS_DIR"alp-test.jpeg")
 {
+    ASG_STOPWATCH("Terrain ctor body");
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
 

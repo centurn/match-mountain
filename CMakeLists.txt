@@ -18,6 +18,11 @@ set(LIBS
 )
 
 add_definitions( -DASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/test/" )
+option(ASG_PROFILE "Build-in high-level profiling" OFF)
+if(ASG_PROFILE)
+    add_definitions(-DASG_PROFILE)
+endif()
+
 IF (EMSCRIPTEN)
   SET(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
 ELSE ()

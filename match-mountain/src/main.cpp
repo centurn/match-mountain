@@ -43,7 +43,7 @@ int main(int /*argc*/, char */*argv*/[])
 #ifdef __EMSCRIPTEN__
     // Emscrpten does not channel resize event to SDL.
     // Looks like the onl way to handle resize in browser is to subscribe to them this way...
-    auto emscCanvasSizeChanged = [](int eventType, const void* reserved, void* userData) ->EM_BOOL {
+    auto emscCanvasSizeChanged = [](int eventType, const void* reserved, void* userData) -> EM_BOOL {
         ivec2 new_size;
         emscripten_get_canvas_element_size("#canvas", &new_size.x, &new_size.y);
         Window* wnd = reinterpret_cast<Window*>(userData);
@@ -58,6 +58,16 @@ int main(int /*argc*/, char */*argv*/[])
     fsStrategy.canvasResizedCallback = emscCanvasSizeChanged;
     fsStrategy.canvasResizedCallbackUserData = &window;
     emscripten_enter_soft_fullscreen(nullptr, &fsStrategy);
+
+    // TODO: actual handling of contex lost/restoring events
+    emscripten_set_webglcontextlost_callback(nullptr, nullptr, true, [](int, const void *, void *userData) -> EM_BOOL{
+        log_i("GL Context Lost\n");
+        return true;
+    });
+    emscripten_set_webglcontextrestored_callback(nullptr, nullptr, true, [](int, const void *, void *userData) -> EM_BOOL{
+        log_i("GL Context Restored\n");
+        return true;
+    });
 #endif
 
     bool quit = false;
