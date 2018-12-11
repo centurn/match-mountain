@@ -1,7 +1,11 @@
 #include "window.h"
+#include "asg_gl.h"
+#include "applet_base.h"
 
 #include <SDL.h>
 #include <cstdlib>
+
+namespace asg {
 
 static constexpr int BITS_PER_CHANNEL = 8;
 
@@ -59,13 +63,23 @@ Window::Window()
     log_i("OK\n");
 
     SDL_GL_SetSwapInterval(0);
-    SDL_GL_GetDrawableSize(sdl_window.get(), &width, &height);
+    SDL_GL_GetDrawableSize(sdl_window.get(), &size.x, &size.y);
 
-    log_i("Render target size: %d by %d\n", width, height);
+    log_i("Render target size: %d by %d\n", size.x, size.y);
 }
 
 Window::~Window()
 {
+}
+
+void Window::handleResize(glm::ivec2 new_size)
+{
+    if(new_size != size){
+        log_d("Resize event: %dx%d", new_size.x, new_size.y);
+        size = new_size;
+        glViewport(0,0, size.x, size.y); checkGL();
+        app->resize(new_size);
+    }
 }
 
 
@@ -80,4 +94,6 @@ void Window::SDL_Context_Deleter::operator()(SDL_GLContext ctx)
 {
     log_i("Destroying the SDL context\n");
     SDL_GL_DeleteContext(ctx);
+}
+
 }

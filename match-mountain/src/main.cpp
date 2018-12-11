@@ -18,22 +18,13 @@
 #include "asg_gl.h"
 
 using namespace asg;
+using glm::ivec2;
 
 static std::function<void()> loop;
 void main_loop() { loop(); }
 
 int main(int /*argc*/, char */*argv*/[])
 {
-#ifdef __EMSCRIPTEN__
-    EmscriptenFullscreenStrategy fsStrategy = { };
-    fsStrategy.scaleMode = EMSCRIPTEN_FULLSCREEN_SCALE_DEFAULT;
-    fsStrategy.canvasResolutionScaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_HIDEF;
-    fsStrategy.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_NEAREST;
-    fsStrategy.canvasResizedCallback = nullptr;
-    fsStrategy.canvasResizedCallbackUserData = nullptr;
-    emscripten_enter_soft_fullscreen(nullptr, &fsStrategy);
-#endif
-
     Window window;
 
     auto rdr = SDL_CreateRenderer(
@@ -46,8 +37,29 @@ int main(int /*argc*/, char */*argv*/[])
 
     geo::Position pos{{46.521945}, {11.228202}};
     Terrain app(pos);
-    glm::ivec2 wnd_size{window.getWidth(), window.getHeight()};
-    app.resize(wnd_size);
+    window.setApplet(&app);
+    app.resize(window.getSize());
+
+#ifdef __EMSCRIPTEN__
+    // Emscrpten does not channel resize event to SDL.
+    // Looks like the onl way to handle resize in browser is to subscribe to them this way...
+    auto emscCanvasSizeChanged = [](int eventType, const void* reserved, void* userData) ->EM_BOOL {
+        ivec2 new_size;
+        emscripten_get_canvas_element_size("#canvas", &new_size.x, &new_size.y);
+        Window* wnd = reinterpret_cast<Window*>(userData);
+        wnd->handleResize(new_size);
+        return true;
+    };
+
+    EmscriptenFullscreenStrategy fsStrategy = { };
+    fsStrategy.scaleMode = EMSCRIPTEN_FULLSCREEN_SCALE_DEFAULT;
+    fsStrategy.canvasResolutionScaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_HIDEF;
+    fsStrategy.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_NEAREST;
+    fsStrategy.canvasResizedCallback = emscCanvasSizeChanged;
+    fsStrategy.canvasResizedCallbackUserData = &window;
+    emscripten_enter_soft_fullscreen(nullptr, &fsStrategy);
+#endif
+
     bool quit = false;
 
     glFrontFace( GL_CCW );
@@ -68,12 +80,7 @@ int main(int /*argc*/, char */*argv*/[])
                 return;
             case SDL_WINDOWEVENT:
                 if(e.window.event == SDL_WINDOWEVENT_RESIZED || e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
-                    glm::ivec2 new_size{e.window.data1, e.window.data2};
-                    if(new_size != wnd_size){
-                        wnd_size = new_size;
-                        glViewport(0,0, wnd_size.x, wnd_size.y); checkGL();
-                        app.resize(new_size);
-                    }
+                    window.handleResize({e.window.data1, e.window.data2});
                 }
                 break;
             case SDL_MOUSEMOTION:

@@ -1,8 +1,15 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#pragma once
 
 #include "asg_base.h"
 #include <memory>// for unique_ptr
+#include "glm/vec2.hpp"
+
+// Forward declarations - to limit includes of SDL.h
+struct SDL_Window;
+
+namespace  asg {
+
+class AppletBase;
 
 // Contain the matching init/deinit of SDL core
 // Ensures properly closed core in case of error in Window ctor
@@ -11,10 +18,6 @@ struct SDLCoreInit{
     ~SDLCoreInit();
 };
 
-
-// Forward declarations - to limit includes of SDL.h
-struct SDL_Window;
-
 class Window{
 public:
     Window();
@@ -22,12 +25,13 @@ public:
     SDL_Window* getNativeWindow(){
         return sdl_window.get();
     }
-    int getWidth(){
-        return width;
+    glm::ivec2 getSize() const{
+        return size;
     }
-    int getHeight(){
-        return height;
+    void setApplet(AppletBase* applet){
+        app = applet;
     }
+    void handleResize(glm::ivec2 new_size);
 private:
     struct SDL_Window_Deleter{// The best way to feed deleter to unique_ptr?
         void operator()(SDL_Window* window);
@@ -42,8 +46,10 @@ private:
     //SDL_GLContext is defined as void*. That's validated in .cpp file
     std::unique_ptr<void, SDL_Context_Deleter> sdl_gl_context;
 
-    int width;
-    int height;
+    glm::ivec2 size;
+    AppletBase* app;
 };
 
-#endif
+
+}
+
