@@ -1,6 +1,8 @@
 #include "import_hgt.h"
-#include <fstream>
+#include "asg_storage.h"
 #include <cstring>// for memcpy
+
+using namespace asg;
 
 namespace geo{
 
@@ -26,21 +28,6 @@ static std::string makeHgtFilename(Position pos){
     return ASSETS_DIR + std::string(buff);
 }
 
-static std::vector<std::byte> readWholeFile(const char* filename){
-    log_d("Reading file: %s", filename);
-    std::ifstream file(filename, std::ios::binary | std::ios::ate);
-    VALIDATE(file.good());
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::vector<std::byte> result(static_cast<size_t>(size));
-    if (!file.read(reinterpret_cast<char*>(result.data())
-                  , size))
-    {
-        FAIL();
-    }
-    return result;
-}
 }
 
 
@@ -104,7 +91,7 @@ int ImportHgt::getPixelHeight(int i, int j) const
 {
     assert(i >= 0 && i <= max_hgt_i && j >= 0 && j <= max_hgt_j);
     size_t loc = size_t(i*max_hgt_j + j)*2;
-    return convertPixel(reinterpret_cast<const uint8_t*>(&data[loc]));
+    return convertPixel(&data[loc]);
 }
 
 std::tuple<int, int> ImportHgt::nearestPixel(Position pos) const

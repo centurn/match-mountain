@@ -19,7 +19,7 @@ public:
     int getPixelHeight(int i, int j) const;
     std::tuple<int, int> nearestPixel(Position pos) const;
 private:
-    std::vector<std::byte> data;
+    std::vector<uint8_t> data;
     Position origin;// The north-west corner of the tile
 };
 
