@@ -1,5 +1,6 @@
 #pragma once
 
+#include "geo_coords.h"
 #include <memory>
 
 namespace asg{
@@ -20,6 +21,9 @@ public:
     int getHeight() const{
         return height;
     }
+    geo::Position getLocation() const{
+        return location;
+    }
 private:
     // Buffer is allocated by stb, so custom deleter is needed
     // Separate functor to avoid silly indirection of pointer-to-function
@@ -29,6 +33,8 @@ private:
     std::unique_ptr<uint8_t, StbDeleter> data;
     int width;
     int height;
+
+    geo::Position location;
 };
 
 }

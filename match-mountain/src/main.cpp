@@ -32,11 +32,7 @@ int main(int /*argc*/, char */*argv*/[])
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    //geo::Position pos{{37.618758}, {-3.747283}};
-//    geo::Position pos{{46.512088}, {11.232680}};
-
-    geo::Position pos{{46.521945}, {11.228202}};
-    Terrain app(pos);
+    Terrain app(ASSETS_DIR"alp-test.jpeg");
     window.setApplet(&app);
     app.resize(window.getSize());
 

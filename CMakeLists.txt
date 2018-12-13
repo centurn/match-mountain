@@ -23,10 +23,11 @@ if(ASG_PROFILE)
     add_definitions(-DASG_PROFILE)
 endif()
 
+add_subdirectory(third-party)
+
 IF (EMSCRIPTEN)
   SET(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
 ELSE ()
-  add_subdirectory(third-party)
   set(LIBS
     SDL2
     ${LIBS}
@@ -36,11 +37,12 @@ ENDIF()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/stb)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/easyexif)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/span/include/tcb)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/glm)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../span/include/tcb)
 
 
-#message(STATUS, ${SOURCES})
-add_executable(match-mountain ${SOURCES})
+#message(STATUS,${SOURCES_THIRD_PARTY})
+add_executable(match-mountain ${SOURCES} ${SOURCES_THIRD_PARTY})
 target_link_libraries(match-mountain ${LIBS})

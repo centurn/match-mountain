@@ -66,9 +66,11 @@ static float eye_height(const ImportHgt& importer, Position pos){
 
 }
 
-Terrain::Terrain(Position pos)
-    : ref_image(ASSETS_DIR"alp-test.jpeg")
+Terrain::Terrain(const char* image_filename)
+    : ref_image(image_filename)
 {
+    Position pos = ref_image.getTexture()->getBitmap().getLocation();
+    VALIDATE(pos.isValid());
     ASG_STOPWATCH("Terrain ctor body");
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);

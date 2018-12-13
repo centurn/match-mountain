@@ -32,6 +32,9 @@ struct Coordinate{
 struct Position{
     Coordinate lat;
     Coordinate lon;
+    bool isValid(){
+        return std::abs(lat.value) <= 90.0 && std::abs(lon.value) <= 180;
+    }
 };
 
 

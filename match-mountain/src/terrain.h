@@ -9,7 +9,7 @@ class Terrain
     : public asg::AppletBase
 {
 public:
-    Terrain(geo::Position pos);
+    Terrain(const char* image_filename);
     virtual ~Terrain() override;
 
     // AppletBase interface

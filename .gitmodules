@@ -10,3 +10,6 @@
 [submodule "third-party/glm"]
 	path = third-party/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "third-party/easyexif"]
+	path = third-party/easyexif
+	url = git@github.com:mayanklahiri/easyexif.git

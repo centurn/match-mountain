@@ -24,9 +24,13 @@ public:
     // Resize the vertex buffer so that the image makes
     // maximum fit to the screen while preserving the aspect ratio
     void fitScreen(float screen_aspect);
+
+    const Texture* getTexture() const{
+        return texture.get();
+    }
 private:
     Mesh mesh;
-    float texture_aspect;
+    std::shared_ptr<Texture> texture;
     bool alpha_enabled = true;
     asg::UniformHandler u_apha;
     std::shared_ptr<AttribBuffer> positions;

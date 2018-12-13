@@ -38,8 +38,7 @@ static const Ruint indices[] = {0, 1, 2, 2, 1, 3};
 
 BackgroundImage::BackgroundImage(const char *src)
 {
-    auto texture = std::make_shared<Texture>(src);
-    texture_aspect = float(texture->getBitmap().getWidth()) / texture->getBitmap().getHeight();
+    texture = std::make_shared<Texture>(src);
     mesh.setProgram(std::make_shared<asg::ShaderProgram>(vs_src, fs_src));
     auto positions_attr = AttribDescr::fromArray("position", vertices, 2);
     positions = positions_attr.buff;
@@ -76,6 +75,7 @@ void BackgroundImage::render()
 
 void BackgroundImage::fitScreen(float screen_aspect)
 {
+    float texture_aspect = float(texture->getBitmap().getWidth()) / texture->getBitmap().getHeight();
     std::array<vec2, std::size(vertices)> pos;
     std::copy(std::begin(vertices), std::end(vertices), std::begin(pos));
     int stretch_axis;
