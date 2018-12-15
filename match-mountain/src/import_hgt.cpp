@@ -18,13 +18,15 @@ static constexpr int max_hgt_i = 1201;// 'vertical'/latutudal
 static constexpr int max_hgt_j = 1201;// 'horizontal'/longitudal
 
 
+// Form name of .hgt for a given position
 static std::string makeHgtFilename(Position pos){
     char buff[12];
+    int western = pos.lon.deg() < 0;// Not just a flag - add 1 in western hemisphere
     std::snprintf(buff, sizeof(buff), "%c%02d%c%03d.hgt"
                   , pos.lat.deg() >= 0? 'N' : 'S'
                   , std::abs(pos.lat.deg()%100)
-                  , pos.lon.deg() >= 0? 'E' : 'W'
-                  , std::abs(pos.lon.deg()%1000));
+                  , western? 'W': 'E'
+                  , std::abs((pos.lon.deg() - western)%1000)) ;
     return SRTM_DIR + std::string(buff);
 }
 
@@ -99,7 +101,7 @@ std::tuple<int, int> ImportHgt::nearestPixel(Position pos) const
     int i = pos.lat.totalSec() / hgt_resolution;
     int j = pos.lon.totalSec() / hgt_resolution;
     return std::make_tuple(i >= 0? max_hgt_i - i: -i
-                           , j >= 0? j : std::abs(j)/*max_hgt_j + j*/);
+                           , j >= 0? j : max_hgt_j + j);
 }
 
 }

@@ -55,7 +55,7 @@ struct Vertex{
 // Precision is not much high here - it degrages with distance.
 // Don't use haversine formula since we are supposed to look from fixed position. And more distant objects need less precision
 static inline glm::vec2 groundCoords(Position origin, Position pos) {
-    return{ 111'300.0 * glm::cos(pos.lat.value) * (pos.lon.value - origin.lon.value)
+    return{ -111'300.0 * glm::cos(glm::radians(pos.lat.value)) * (pos.lon.value - origin.lon.value)
           , 111'300.0 * (pos.lat.value - origin.lat.value)};
 };
 
