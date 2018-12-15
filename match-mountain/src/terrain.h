@@ -32,7 +32,8 @@ private:
     asg::UniformHandler u_mvp;
     glm::vec3 eye_pos;
     glm::vec3 initial_eye_pos;
-    float vfov{glm::radians(20.f)};
+    float initial_vfov;
+    float vfov{glm::radians(50.f)};
     glm::vec2 rotation_cam{0,0};// Rotation delta - cumulative in radians
 
     asg::BackgroundImage ref_image;

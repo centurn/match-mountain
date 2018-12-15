@@ -24,6 +24,11 @@ public:
     geo::Position getLocation() const{
         return location;
     }
+
+    // Vertical FOV
+    float getVfov() const{
+        return vfov;
+    }
 private:
     // Buffer is allocated by stb, so custom deleter is needed
     // Separate functor to avoid silly indirection of pointer-to-function
@@ -35,6 +40,7 @@ private:
     int height;
 
     geo::Position location;
+    float vfov;
 };
 
 }

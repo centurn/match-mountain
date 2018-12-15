@@ -71,6 +71,9 @@ Terrain::Terrain(const char* image_filename)
 {
     Position pos = ref_image.getTexture()->getBitmap().getLocation();
     VALIDATE(pos.isValid());
+    initial_vfov = ref_image.getTexture()->getBitmap().getVfov();
+    vfov = initial_vfov;
+
     ASG_STOPWATCH("Terrain ctor body");
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
@@ -238,7 +241,7 @@ void Terrain::keyDown(int virtual_keycode)
     case '\r':// Enter - reset to initial position
         eye_pos = initial_eye_pos;
         rotation_cam = {0, 0};
-        vfov = {glm::radians(20.f)};
+        vfov = initial_vfov;
         break;
     }
 }
