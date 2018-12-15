@@ -94,11 +94,11 @@ int main(int /*argc*/, char */*argv*/[])
                             , {e.motion.xrel, e.motion.yrel}, e.motion.state);
                 break;
             case SDL_MOUSEWHEEL:
-//            #ifdef __EMSCRIPTEN__// WTF in Chrome the wheel events are coming with larger values
-//                app.mouseWheel({e.wheel.x/10, e.wheel.y/10});
-//            #else
+            #ifdef __EMSCRIPTEN__// WTF in Chrome the wheel events are coming with 30x larger values than native or Firefox
+                app.mouseWheel({glm::clamp(e.wheel.x, -1, 1), glm::clamp(e.wheel.y, -1, 1)});
+            #else
                 app.mouseWheel({e.wheel.x, e.wheel.y});
-//            #endif
+            #endif
                 break;
             case SDL_KEYDOWN:
                 app.keyDown(e.key.keysym.sym);
