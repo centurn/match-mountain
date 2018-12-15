@@ -32,7 +32,7 @@ int main(int /*argc*/, char */*argv*/[])
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    Terrain app(ASSETS_DIR"37800 IMG_2844.jpg");
+    Terrain app(PICS_DIR "37800 IMG_2844.jpg");
     window.setApplet(&app);
     app.resize(window.getSize());
 

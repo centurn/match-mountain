@@ -3,7 +3,7 @@
 
 namespace asg{
 std::vector<uint8_t> readWholeFile(const char* filename){
-    log_d("Reading file: %s", filename);
+    log_i("Reading file: %s\n", filename);
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
     VALIDATE(file.good());
     std::streamsize size = file.tellg();
@@ -13,6 +13,7 @@ std::vector<uint8_t> readWholeFile(const char* filename){
     if (!file.read(reinterpret_cast<char*>(result.data())
                   , size))
     {
+        log_e("Failed to load file: %s\n", filename);
         FAIL();
     }
     return result;

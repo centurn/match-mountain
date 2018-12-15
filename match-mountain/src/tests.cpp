@@ -130,7 +130,7 @@ std::unique_ptr<Mesh> makeCube()
 }
 
 CubeTest::CubeTest()
-    : background(ASSETS_DIR"37800 IMG_2844.jpg")
+    : background(PICS_DIR"37800 IMG_2844.jpg")
     , cube(tests::makeCube())
     , u_world(cube->addUniform("World"))
     , u_mvp(cube->addUniform("MVP"))

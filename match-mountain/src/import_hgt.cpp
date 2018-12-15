@@ -25,7 +25,7 @@ static std::string makeHgtFilename(Position pos){
                   , std::abs(pos.lat.deg()%100)
                   , pos.lon.deg() >= 0? 'E' : 'W'
                   , std::abs(pos.lon.deg()%1000));
-    return ASSETS_DIR + std::string(buff);
+    return SRTM_DIR + std::string(buff);
 }
 
 }

@@ -17,7 +17,14 @@ set(LIBS
   ${OPENGL_LIBRARY}
 )
 
-add_definitions( -DASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/test/" )
+if (EMSCRIPTEN)
+    add_definitions( -DPICS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/test/" )
+    add_definitions( -DSRTM_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets/test/" )
+else ()
+    add_definitions( -DPICS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../test_pictures/" )
+    add_definitions( -DSRTM_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../SRTM/" )
+endif ()
+
 option(ASG_PROFILE "Build-in high-level profiling" OFF)
 if(ASG_PROFILE)
     add_definitions(-DASG_PROFILE)
@@ -25,15 +32,15 @@ endif()
 
 add_subdirectory(third-party)
 
-IF (EMSCRIPTEN)
-  SET(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
-ELSE ()
+if (EMSCRIPTEN)
+  set(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
+else ()
   set(LIBS
     SDL2
     ${LIBS}
   )
 
-ENDIF()
+endif()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/stb)
