@@ -13,3 +13,6 @@
 [submodule "third-party/easyexif"]
 	path = third-party/easyexif
 	url = git@github.com:mayanklahiri/easyexif.git
+[submodule "third-party/tinyfiledialogs"]
+	path = third-party/tinyfiledialogs
+	url = https://git.code.sf.net/p/tinyfiledialogs/code

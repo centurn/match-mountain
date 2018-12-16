@@ -31,6 +31,7 @@ private:
 
 private:
     std::unique_ptr<TerrainData> data;
+    std::string previous_filename;
 
     glm::vec3 eye_pos;
     float vfov{glm::radians(50.f)};

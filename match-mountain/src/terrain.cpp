@@ -4,6 +4,7 @@
 #include "shader_program.h"
 #include "attrib_buffer.h"
 #include "asg_perf.h"
+#include "asg_storage.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -159,6 +160,7 @@ TerrainData::TerrainData(const char* photo_filename)
 
 Terrain::Terrain(const char* image_filename)
     : data(std::make_unique<TerrainData>(image_filename))
+    , previous_filename(image_filename)
 {
     vfov = data->initial_vfov;
     eye_pos = data->initial_eye_pos;
@@ -245,6 +247,22 @@ void Terrain::keyDown(int virtual_keycode)
         rotation_cam = {0, 0};
         vfov = data->initial_vfov;
         break;
+    case 'v':{
+        const char * filters[]  = {"*.jpg","*.png"};
+        auto filename = fileOpenDialog(previous_filename.c_str(), filters, "Jpeg image files");
+        if(!filename.empty()){
+            previous_filename = filename;
+            try{
+                auto new_image = std::make_unique<TerrainData>(filename.c_str());
+                data = std::move(new_image);
+                vfov = data->initial_vfov;
+                eye_pos = data->initial_eye_pos;
+                data->ref_image.fitScreen(float(width)/height);
+            }catch(const std::exception e){
+                log_e("Failed to switch to new image. Reason: %s\n", e.what());
+            }
+        }
+    }
     }
 }
 
