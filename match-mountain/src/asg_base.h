@@ -38,8 +38,8 @@ private:
 };
 
 // Run-time validation. For now, just assert, but probably throw in the future
-#define VALIDATE(Expr) assert(Expr);
-#define FAIL() assert(0);
+#define VALIDATE(Expr){ if(!(Expr)) throw asg::GenericException(#Expr);}
+#define FAIL(){ throw asg::GenericException("");};
 
 // Just to signify the intentional absence of 'explicit' qualifier
 #define IMPLICIT

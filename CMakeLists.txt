@@ -33,7 +33,7 @@ endif()
 add_subdirectory(third-party)
 
 if (EMSCRIPTEN)
-  set(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
+  set(CMAKE_CXX_FLAGS "-s USE_SDL=2 -s TOTAL_MEMORY=157286400 -s DISABLE_EXCEPTION_CATCHING=0 --preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets/test/")
 else ()
   set(LIBS
     SDL2

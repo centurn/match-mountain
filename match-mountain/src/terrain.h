@@ -5,6 +5,8 @@
 #include "geo_coords.h"
 #include "background_image.h"
 
+struct TerrainData;
+
 class Terrain
     : public asg::AppletBase
 {
@@ -28,15 +30,12 @@ private:
     inline float hfov() const;
 
 private:
-    asg::Mesh terra;
-    asg::UniformHandler u_mvp;
+    std::unique_ptr<TerrainData> data;
+
     glm::vec3 eye_pos;
-    glm::vec3 initial_eye_pos;
-    float initial_vfov;
     float vfov{glm::radians(50.f)};
     glm::vec2 rotation_cam{0,0};// Rotation delta - cumulative in radians
 
-    asg::BackgroundImage ref_image;
     bool ref_image_enabled = false;
     bool ref_image_blend = true;
 };

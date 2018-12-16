@@ -66,19 +66,29 @@ static float eye_height(const ImportHgt& importer, Position pos){
 
 }
 
-Terrain::Terrain(const char* image_filename)
-    : ref_image(image_filename)
+struct TerrainData{
+    TerrainData(const char* photo_filename);
+    asg::BackgroundImage ref_image;
+    float initial_vfov;
+
+    asg::Mesh terra;
+    asg::UniformHandler u_mvp;
+    glm::vec3 initial_eye_pos;
+};
+
+
+TerrainData::TerrainData(const char* photo_filename)
+    : ref_image(photo_filename)
 {
     Position pos = ref_image.getTexture()->getBitmap().getLocation();
     VALIDATE(pos.isValid());
     initial_vfov = ref_image.getTexture()->getBitmap().getVfov();
-    vfov = initial_vfov;
 
     ASG_STOPWATCH("Terrain ctor body");
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
 
-    initial_eye_pos = eye_pos = vec3(0.0f, eye_height(importer, pos) + 5.0f, 0.0f);
+    initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 5.0f, 0.0f);
 
     int j_len = (rect.j_end - rect.j_begin);
     int i_len = (rect.i_end - rect.i_begin);
@@ -87,6 +97,7 @@ Terrain::Terrain(const char* image_filename)
     Vertex* vertices = reinterpret_cast<Vertex*>(vb.data());
     Vertex* cur_vtx = vertices;
 
+    // Generate mesh geometry
     for(int i = rect.i_begin; i != rect.i_end; ++i){
         for(int j = rect.j_begin; j != rect.j_end; ++j, ++cur_vtx){
             float hgt = importer.getPixelHeight(i, j);
@@ -114,6 +125,7 @@ Terrain::Terrain(const char* image_filename)
         }
     }
 
+    //Generate normals. TODO: this piece could be generalized and moved to engine part
     for(size_t i = 0; i != vertex_count; ++i){
         vertices[i].normal = vec3(0.f);
     }
@@ -144,6 +156,14 @@ Terrain::Terrain(const char* image_filename)
     u_mvp = terra.addUniform("MVP");
 }
 
+
+Terrain::Terrain(const char* image_filename)
+    : data(std::make_unique<TerrainData>(image_filename))
+{
+    vfov = data->initial_vfov;
+    eye_pos = data->initial_eye_pos;
+}
+
 Terrain::~Terrain()
 {
 }
@@ -151,7 +171,7 @@ Terrain::~Terrain()
 void Terrain::resize(glm::ivec2 size)
 {
     AppletBase::resize(size);
-    ref_image.fitScreen(float(width)/height);
+    data->ref_image.fitScreen(float(width)/height);
 }
 
 void Terrain::render()
@@ -161,10 +181,10 @@ void Terrain::render()
                                       , 2.0f
                                       , float(min_extent)*1.5f);
     mat4 viewproj = projection * getCamRotation() * glm::translate(mat4(1), -eye_pos);
-    u_mvp.set(viewproj);
-    terra.render();
+    data->u_mvp.set(viewproj);
+    data->terra.render();
     if(ref_image_enabled){
-        ref_image.render();
+        data->ref_image.render();
     }
 }
 
@@ -218,12 +238,12 @@ void Terrain::keyDown(int virtual_keycode)
         break;
     case 'o':// Toggle blending of reference image
         ref_image_blend = !ref_image_blend;
-        ref_image.enableBlending(ref_image_blend);
+        data->ref_image.enableBlending(ref_image_blend);
         break;
     case '\r':// Enter - reset to initial position
-        eye_pos = initial_eye_pos;
+        eye_pos = data->initial_eye_pos;
         rotation_cam = {0, 0};
-        vfov = initial_vfov;
+        vfov = data->initial_vfov;
         break;
     }
 }
