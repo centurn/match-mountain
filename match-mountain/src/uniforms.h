@@ -9,8 +9,9 @@
 namespace asg{
 
 using glm::mat4;
-using glm::vec3;
 using glm::vec2;
+using glm::vec3;
+using glm::vec4;
 
 class UniformHandler;
 
@@ -20,6 +21,9 @@ struct UniformData{
     {}
     std::string name;
     std::variant<float
+               , vec2
+               , vec3
+               , vec4
                , mat4
                , std::shared_ptr<Texture>> data;
     Rint gl_id = -1;

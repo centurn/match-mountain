@@ -28,6 +28,7 @@ public:
 private:
     inline glm::mat4 getCamRotation() const;
     inline float hfov() const;
+    inline void animateLight();
 
 private:
     std::unique_ptr<TerrainData> data;
@@ -39,4 +40,7 @@ private:
 
     bool ref_image_enabled = false;
     bool ref_image_blend = true;
+
+    float light_rotation = 0.0f;
+    bool light_rotation_enabled = false;
 };

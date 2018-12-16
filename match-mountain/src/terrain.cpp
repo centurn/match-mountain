@@ -22,9 +22,10 @@ static const char* vs = R"(
     //uniform mat4 World;
     uniform mat4 MVP;
     varying vec3 vColor;
+    uniform vec3 light_dir;
     void main()
     {
-        vec3 light_dir = normalize(vec3(0., 5.0, 5.0));
+        //vec3 light_dir = normalize(vec3(0., 5.0, 5.0));
         float intensity = max(dot(normal, light_dir), 0.);
         vColor = color*intensity;
     //    vColor = color;
@@ -74,6 +75,7 @@ struct TerrainData{
 
     asg::Mesh terra;
     asg::UniformHandler u_mvp;
+    asg::UniformHandler u_light_dir;
     glm::vec3 initial_eye_pos;
 };
 
@@ -155,6 +157,7 @@ TerrainData::TerrainData(const char* photo_filename)
                                       , std::make_shared<AttribBuffer>(std::move(ib), false)
                                       , ScalarType::UInt});
     u_mvp = terra.addUniform("MVP");
+    u_light_dir = terra.addUniform("light_dir");
 }
 
 
@@ -184,6 +187,7 @@ void Terrain::render()
                                       , float(min_extent)*1.5f);
     mat4 viewproj = projection * getCamRotation() * glm::translate(mat4(1), -eye_pos);
     data->u_mvp.set(viewproj);
+    animateLight();
     data->terra.render();
     if(ref_image_enabled){
         data->ref_image.render();
@@ -232,7 +236,7 @@ void Terrain::keyDown(int virtual_keycode)
     case 'w':// Forward
         eye_pos += direction() * v;
         break;
-    case 's':// Basl
+    case 's':// Back
         eye_pos += -direction() * v;
         break;
     case 'i':// Toggle display of reference image
@@ -246,6 +250,9 @@ void Terrain::keyDown(int virtual_keycode)
         eye_pos = data->initial_eye_pos;
         rotation_cam = {0, 0};
         vfov = data->initial_vfov;
+        break;
+    case 'l':
+        light_rotation_enabled = !light_rotation_enabled;
         break;
     case 'v':{
         const char * filters[]  = {"*.jpg","*.png"};
@@ -262,7 +269,7 @@ void Terrain::keyDown(int virtual_keycode)
                 log_e("Failed to switch to new image. Reason: %s\n", e.what());
             }
         }
-    }
+    }break;
     }
 }
 
@@ -280,5 +287,16 @@ glm::mat4 Terrain::getCamRotation() const
 float Terrain::hfov() const
 {
     return vfov * width / height;
+}
+
+void Terrain::animateLight()
+{
+    vec4 light_dir = glm::normalize(vec4(0., 5.0, 5.0, 0.0));
+    if(light_rotation_enabled){
+        light_rotation = glm::mod(light_rotation + 0.01f, glm::radians(360.f));
+    }
+    auto M = glm::rotate(mat4(1.0f), light_rotation, vec3(0.f, 1.f, 0.f));
+    light_dir = M*light_dir;
+    data->u_light_dir.set(vec3(light_dir));
 }
 

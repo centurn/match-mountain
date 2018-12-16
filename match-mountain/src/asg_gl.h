@@ -4,6 +4,7 @@
 
 #include "asg_log.h"
 #include <GLES3/gl3.h>
+#include <cassert>
 
 #ifndef NDEBUG
     #define ENABLE_GL_CHECKS
@@ -14,7 +15,7 @@ inline void checkGLFunc(const char* file, int line){
     GLenum err;
     while( (err = glGetError()) != GL_NO_ERROR){
         log_e("GL Error: 0x%X . Location: %s:%d\n", err, file, line);
-        std::abort();
+        assert(0);
     }
 }
 

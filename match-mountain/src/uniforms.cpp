@@ -14,6 +14,15 @@ struct ApplyToGL{
     void operator()(float a){
         glUniform1f(gl_id, a);
     }
+    void operator()(const vec2& a){
+        glUniform2fv(gl_id, 1, glm::value_ptr(a));
+    }
+    void operator()(const vec3& a){
+        glUniform3fv(gl_id, 1, glm::value_ptr(a));
+    }
+    void operator()(const vec4& a){
+        glUniform4fv(gl_id, 1, glm::value_ptr(a));
+    }
     void operator()(const glm::mat4& a){
         glUniformMatrix4fv(gl_id, 1, GL_FALSE, glm::value_ptr(a));
     }
