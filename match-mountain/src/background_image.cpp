@@ -40,10 +40,10 @@ BackgroundImage::BackgroundImage(const char *src)
 {
     texture = std::make_shared<Texture>(src);
     mesh.setProgram(std::make_shared<asg::ShaderProgram>(vs_src, fs_src));
-    auto positions_attr = AttribDescr::fromArray("position", vertices, 2);
+    auto positions_attr = AttribDescr::fromArray("position", vertices);
     positions = positions_attr.buff;
     mesh.addAttribute(positions_attr);
-    mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords, 2));
+    mesh.addAttribute(AttribDescr::fromArray("texcoord", tex_coords));
     mesh.setTexture("uTexture", texture);
     mesh.setDrawDescription(DrawDescr{DrawType::Triangles
                                       , 6

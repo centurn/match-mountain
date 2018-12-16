@@ -34,6 +34,7 @@ int main(int /*argc*/, char */*argv*/[])
 
     Terrain app(PICS_DIR "37800 IMG_2844.jpg");
 //    Terrain app(PICS_DIR "70000 IMG_0326.jpg");
+    //tests::CubeTest app;
     window.setApplet(&app);
     app.resize(window.getSize());
 

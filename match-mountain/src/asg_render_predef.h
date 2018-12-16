@@ -32,16 +32,19 @@ struct DeduceScalarType{
 
 template <>
 struct DeduceScalarType<float>{
+    static constexpr Rint dimension = 1;
     static constexpr ScalarType scalar_type = ScalarType::Float;
 };
 
 template <>
 struct DeduceScalarType<Rint>{
+    static constexpr Rint dimension = 1;
     static constexpr ScalarType scalar_type = ScalarType::Int;
 };
 
 template <>
 struct DeduceScalarType<Rushort>{
+    static constexpr Rint dimension = 1;
     static constexpr ScalarType scalar_type = ScalarType::UShort;
 };
 

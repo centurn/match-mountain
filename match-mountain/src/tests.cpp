@@ -58,10 +58,10 @@ std::unique_ptr<Mesh> makeTriangle()
                        , 0.0f, 0.0f, -1.0f};
     auto tri = std::make_unique<Mesh>();
     tri->setProgram(std::make_shared<asg::ShaderProgram>(vs_l, fragmentSource));
-    tri->addAttribute(AttribDescr::fromArray("position", vertices, 2));
-//    tri->addAttribute(AttribDescr::fromArray("color", colors, 3));
-    tri->addAttribute(AttribDescr::fromArray("normal", normals, 3));
-    tri->setDrawDescription(DrawDescr{DrawType::Triangles, 3});
+    tri->addAttribute(AttribDescr::fromArray("position", vertices));
+//    tri->addAttribute(AttribDescr::fromArray("color", colors));
+    tri->addAttribute(AttribDescr::fromArray("normal", normals));
+    tri->setDrawDescription(DrawDescr{DrawType::Triangles});
     auto rot_u = tri->addUniform("World");
     rot_u.set(glm::mat4(1.0));
     return tri;
@@ -116,9 +116,9 @@ std::unique_ptr<Mesh> makeCube()
     }
     auto tri = std::make_unique<Mesh>();
     tri->setProgram(std::make_shared<asg::ShaderProgram>(vs_l, fragmentSource));
-    tri->addAttribute(AttribDescr::fromArray("position", vertices, 3));
-//    tri->addAttribute(AttribDescr::fromArray("color", colors, 3));
-    tri->addAttribute(AttribDescr::fromArray("normal", normals, 3));
+    tri->addAttribute(AttribDescr::fromArray("position", vertices));
+//    tri->addAttribute(AttribDescr::fromArray("color", colors));
+    tri->addAttribute(AttribDescr::fromArray("normal", normals));
     tri->setDrawDescription(DrawDescr{DrawType::Triangles
                                       , sizeof(indices)/2
                                       , std::make_shared<AttribBuffer>(make_span(indices), false)

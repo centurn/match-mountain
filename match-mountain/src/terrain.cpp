@@ -134,27 +134,9 @@ Terrain::Terrain(const char* image_filename)
 
     auto vbo = std::make_shared<AttribBuffer>(std::move(vb));
     terra.setProgram(std::make_shared<asg::ShaderProgram>(vs, fs));
-    terra.addAttribute(AttribDescr{"position"
-                                   , vbo
-                                   , 3
-                                   , ScalarType::Float
-                                   , 0
-                                   , sizeof(Vertex)
-                       });
-    terra.addAttribute(AttribDescr{"color"
-                                   , vbo
-                                   , 3
-                                   , ScalarType::Float
-                                   , sizeof (glm::vec3)
-                                   , sizeof(Vertex)
-                       });
-    terra.addAttribute(AttribDescr{"normal"
-                                   , vbo
-                                   , 3
-                                   , ScalarType::Float
-                                   , sizeof (glm::vec3) * 2
-                                   , sizeof(Vertex)
-                       });
+    ASG_STRUCT_ATTRIBUTE(terra, vbo, Vertex, position);
+    ASG_STRUCT_ATTRIBUTE(terra, vbo, Vertex, color);
+    ASG_STRUCT_ATTRIBUTE(terra, vbo, Vertex, normal);
     terra.setDrawDescription(DrawDescr{DrawType::TriangleStrip
                                       , int(indices_count)
                                       , std::make_shared<AttribBuffer>(std::move(ib), false)
