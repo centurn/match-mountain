@@ -28,12 +28,21 @@ public:
     const Texture* getTexture() const{
         return texture.get();
     }
+    void setRotation(float angle){
+        rotation = angle;
+    }
+
+    float getRotation() const{
+        return rotation;
+    }
 private:
     Mesh mesh;
     std::shared_ptr<Texture> texture;
     bool alpha_enabled = true;
     asg::UniformHandler u_apha;
-    std::shared_ptr<AttribBuffer> positions;
+    asg::UniformHandler u_transform;
+    float rotation = 0.0f;
+    mat4 proj;
 };
 
 }

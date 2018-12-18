@@ -91,7 +91,7 @@ TerrainData::TerrainData(const char* photo_filename)
     ImportHgt importer(pos);
     auto rect = importer.getPixelRegion(pos, min_extent);
 
-    initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 5.0f, 0.0f);
+    initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 20.0f, 0.0f);
 
     int j_len = (rect.j_end - rect.j_begin);
     int i_len = (rect.i_end - rect.i_begin);
@@ -200,11 +200,18 @@ void Terrain::mouseWheel(glm::ivec2 delta)
     vfov = glm::clamp(vfov, glm::radians(5.f), glm::radians(120.f));
 }
 
-void Terrain::mouseMove(glm::ivec2 , glm::ivec2 delta, uint pressed_mask)
+void Terrain::mouseMove(glm::ivec2 pos, glm::ivec2 delta, uint pressed_mask)
 {
     if(pressed_mask & 1){// Left Mouse Button
         rotation_cam += glm::vec2(hfov()*(float(-delta.x)/width)
                              , vfov*(float(-delta.y)/height));
+    }
+    if((pressed_mask & (1 << 2)) && ref_image_enabled ){// Right Mouse button
+        //Rotate image around center
+        vec2 tangent = glm::ivec2(width/2, height/2) - pos;
+        tangent = glm::normalize(vec2{-tangent.y, tangent.x});
+        float rotation = glm::dot(tangent, vec2(delta)) * glm::pi<float>() / width;
+        data->ref_image.setRotation(data->ref_image.getRotation() + rotation);
     }
 }
 
@@ -250,6 +257,7 @@ void Terrain::keyDown(int virtual_keycode)
         eye_pos = data->initial_eye_pos;
         rotation_cam = {0, 0};
         vfov = data->initial_vfov;
+        data->ref_image.setRotation(0);
         break;
     case 'l':
         light_rotation_enabled = !light_rotation_enabled;

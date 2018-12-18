@@ -35,6 +35,19 @@ struct AttribDescr{
         };
     }
 
+    template<typename T, std::size_t N>
+    static AttribDescr fromArray(const std::string name
+                                 , const std::array<T, N>& src){
+        return AttribDescr{
+              name
+            , std::make_shared<AttribBuffer>(make_span(src))
+            , DeduceScalarType<typename std::remove_cv<T>::type>::dimension
+            , DeduceScalarType<typename std::remove_cv<T>::type>::scalar_type
+            , 0
+            , 0
+        };
+    }
+
     template<typename T, typename C>
     static AttribDescr fromStruct(const std::string&name
                              , const std::shared_ptr<AttribBuffer>&buff
