@@ -4,6 +4,7 @@
 #include "mesh.h"
 #include "geo_coords.h"
 #include "background_image.h"
+#include "heightmap.h"
 
 struct TerrainData;
 
@@ -28,12 +29,14 @@ public:
 private:
     inline glm::mat4 getCamRotation() const;
     inline float hfov() const;
-    inline void animateLight();
+    inline glm::vec3 animateLight();
 
 private:
-    std::unique_ptr<TerrainData> data;
+    std::unique_ptr<asg::BackgroundImage> ref_image;
+    std::unique_ptr<geo::Heightmap> terra;
     std::string previous_filename;
 
+    float initial_vfov;
     glm::vec3 eye_pos;
     float vfov{glm::radians(50.f)};
     glm::vec2 rotation_cam{0,0};// Rotation delta - cumulative in radians

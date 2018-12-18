@@ -1,7 +1,6 @@
 #include "terrain.h"
 
 #include "import_hgt.h"
-#include "shader_program.h"
 #include "attrib_buffer.h"
 #include "asg_perf.h"
 #include "asg_storage.h"
@@ -11,162 +10,17 @@
 using namespace asg;
 using namespace geo;
 
-namespace  {
-
-static constexpr double min_extent = 20*1000.0;// 10 km square around the point of interest
-
-static const char* vs = R"(
-    attribute vec4 position;
-    attribute vec3 color;
-    attribute vec3 normal;
-    //uniform mat4 World;
-    uniform mat4 MVP;
-    varying vec3 vColor;
-    uniform vec3 light_dir;
-    void main()
-    {
-        //vec3 light_dir = normalize(vec3(0., 5.0, 5.0));
-        float intensity = max(dot(normal, light_dir), 0.);
-        vColor = color*intensity;
-    //    vColor = color;
-      gl_Position = MVP * vec4(position.xyz, 1.0);
-    })";
-
-static const char* fs = R"(
-    #ifdef GL_ES
-        precision mediump float;
-    #endif
-    varying vec3 vColor;
-    void main()
-    {
-      gl_FragColor = vec4 (vColor, 1.0 );
-    })";
-
-struct Vertex{
-    vec3 position;
-    vec3 color;
-    vec3 normal;
-};
-
-
-// convert 'pos' Geographic coords to Scene coords
-// Origin is at the start point - we build geometry around it
-// x axis is along circle of latitude
-// y axis is along meridian
-// Units are meters
-// Precision is not much high here - it degrages with distance.
-// Don't use haversine formula since we are supposed to look from fixed position. And more distant objects need less precision
-static inline glm::vec2 groundCoords(Position origin, Position pos) {
-    return{ -111'300.0 * glm::cos(glm::radians(pos.lat.value)) * (pos.lon.value - origin.lon.value)
-          , 111'300.0 * (pos.lat.value - origin.lat.value)};
-};
-
-static float eye_height(const ImportHgt& importer, Position pos){
-    auto [i, j] = importer.nearestPixel(pos);
-    return importer.getPixelHeight(i, j);
-}
-
-}
-
-struct TerrainData{
-    TerrainData(const char* photo_filename);
-    asg::BackgroundImage ref_image;
-    float initial_vfov;
-
-    asg::Mesh terra;
-    asg::UniformHandler u_mvp;
-    asg::UniformHandler u_light_dir;
-    glm::vec3 initial_eye_pos;
-};
-
-
-TerrainData::TerrainData(const char* photo_filename)
-    : ref_image(photo_filename)
-{
-    Position pos = ref_image.getTexture()->getBitmap().getLocation();
-    VALIDATE(pos.isValid());
-    initial_vfov = ref_image.getTexture()->getBitmap().getVfov();
-
-    ASG_STOPWATCH("Terrain ctor body");
-    ImportHgt importer(pos);
-    auto rect = importer.getPixelRegion(pos, min_extent);
-
-    initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 20.0f, 0.0f);
-
-    int j_len = (rect.j_end - rect.j_begin);
-    int i_len = (rect.i_end - rect.i_begin);
-    size_t  vertex_count = size_t(i_len*j_len);
-    std::vector<byte> vb(vertex_count * sizeof(Vertex));
-    Vertex* vertices = reinterpret_cast<Vertex*>(vb.data());
-    Vertex* cur_vtx = vertices;
-
-    // Generate mesh geometry
-    for(int i = rect.i_begin; i != rect.i_end; ++i){
-        for(int j = rect.j_begin; j != rect.j_end; ++j, ++cur_vtx){
-            float hgt = importer.getPixelHeight(i, j);
-            auto grounds = groundCoords(pos, importer.getPixelCoords(i, j));
-            new (&cur_vtx->position) vec3(grounds.x, hgt, grounds.y);
-            new (&cur_vtx->color) vec3(glm::clamp(hgt/2000, 0.f, 1.f)
-                                       , 1.f - glm::clamp(hgt/2000, 0.f, 1.f)
-                                       , 0.0f);
-        }
-    }
-
-    // Generate index buffer
-    using IdxType = Ruint;
-    size_t indices_count = vertex_count + (vertex_count - 1)*2;
-    std::vector<byte> ib(indices_count*sizeof(IdxType));
-    IdxType* index = reinterpret_cast<IdxType*>(ib.data());
-    for(int i = 0; i != i_len - 1; ++i){
-        if(i != 0){// Degenerate triangle when connecting to next row
-            *(index++) = Ruint((i + 1)*j_len) - 1;
-            *(index++) = Ruint(i*j_len);
-        }
-        for(int j = 0; j != j_len; ++j){
-            *(index++) = Ruint(i*j_len + j);
-            *(index++) = Ruint((i + 1)*j_len + j);
-        }
-    }
-
-    //Generate normals. TODO: this piece could be generalized and moved to engine part
-    for(size_t i = 0; i != vertex_count; ++i){
-        vertices[i].normal = vec3(0.f);
-    }
-    IdxType* indices = reinterpret_cast<IdxType*>(ib.data());
-    for(size_t j = 2; j < indices_count; ++j){
-        auto perpendicular = glm::cross(vertices[indices[j-1]].position - vertices[indices[j]].position
-                ,vertices[indices[j-2]].position - vertices[indices[j]].position);
-        if(!(j & 1))
-            perpendicular = -perpendicular;
-        for(auto k = j-2; k != j+1; ++k){
-            vertices[indices[k]].normal += perpendicular;
-        }
-    }
-    for(size_t i = 0; i != vertex_count; ++i){
-        assert(glm::length(vertices[i].normal) > 0);
-        vertices[i].normal = glm::normalize(vertices[i].normal);
-    }
-
-    auto vbo = std::make_shared<AttribBuffer>(std::move(vb));
-    terra.setProgram(std::make_shared<asg::ShaderProgram>(vs, fs));
-    ASG_STRUCT_ATTRIBUTE(terra, vbo, Vertex, position);
-    ASG_STRUCT_ATTRIBUTE(terra, vbo, Vertex, color);
-    ASG_STRUCT_ATTRIBUTE(terra, vbo, Vertex, normal);
-    terra.setDrawDescription(DrawDescr{DrawType::TriangleStrip
-                                      , int(indices_count)
-                                      , std::make_shared<AttribBuffer>(std::move(ib), false)
-                                      , ScalarType::UInt});
-    u_mvp = terra.addUniform("MVP");
-    u_light_dir = terra.addUniform("light_dir");
-}
-
-
 Terrain::Terrain(const char* image_filename)
-    : data(std::make_unique<TerrainData>(image_filename))
+    : ref_image(std::make_unique<BackgroundImage>(image_filename))
+    , terra(std::make_unique<Heightmap>(ref_image->getTexture()->getBitmap().getLocation()))
     , previous_filename(image_filename)
 {
-    vfov = data->initial_vfov;
-    eye_pos = data->initial_eye_pos;
+    Position pos = ref_image->getTexture()->getBitmap().getLocation();
+    VALIDATE(pos.isValid());
+    initial_vfov = ref_image->getTexture()->getBitmap().getVfov();
+
+    vfov = initial_vfov;
+    eye_pos = terra->initialPos();
 }
 
 Terrain::~Terrain()
@@ -176,7 +30,7 @@ Terrain::~Terrain()
 void Terrain::resize(glm::ivec2 size)
 {
     AppletBase::resize(size);
-    data->ref_image.fitScreen(float(width)/height);
+    ref_image->fitScreen(float(width)/height);
 }
 
 void Terrain::render()
@@ -184,13 +38,11 @@ void Terrain::render()
     mat4 projection = glm::perspective(vfov
                                       , float(width)/height
                                       , 2.0f
-                                      , float(min_extent)*1.5f);
+                                      , float(Heightmap::min_extent)*1.5f);
     mat4 viewproj = projection * getCamRotation() * glm::translate(mat4(1), -eye_pos);
-    data->u_mvp.set(viewproj);
-    animateLight();
-    data->terra.render();
+    terra->render(viewproj, animateLight());
     if(ref_image_enabled){
-        data->ref_image.render();
+        ref_image->render();
     }
 }
 
@@ -211,7 +63,7 @@ void Terrain::mouseMove(glm::ivec2 pos, glm::ivec2 delta, uint pressed_mask)
         vec2 tangent = glm::ivec2(width/2, height/2) - pos;
         tangent = glm::normalize(vec2{-tangent.y, tangent.x});
         float rotation = glm::dot(tangent, vec2(delta)) * glm::pi<float>() / width;
-        data->ref_image.setRotation(data->ref_image.getRotation() + rotation);
+        ref_image->setRotation(ref_image->getRotation() + rotation);
     }
 }
 
@@ -251,13 +103,13 @@ void Terrain::keyDown(int virtual_keycode)
         break;
     case 'o':// Toggle blending of reference image
         ref_image_blend = !ref_image_blend;
-        data->ref_image.enableBlending(ref_image_blend);
+        ref_image->enableBlending(ref_image_blend);
         break;
     case '\r':// Enter - reset to initial position
-        eye_pos = data->initial_eye_pos;
+        eye_pos = terra->initialPos();
         rotation_cam = {0, 0};
-        vfov = data->initial_vfov;
-        data->ref_image.setRotation(0);
+        vfov = initial_vfov;
+        ref_image->setRotation(0);
         break;
     case 'l':
         light_rotation_enabled = !light_rotation_enabled;
@@ -268,11 +120,16 @@ void Terrain::keyDown(int virtual_keycode)
         if(!filename.empty()){
             previous_filename = filename;
             try{
-                auto new_image = std::make_unique<TerrainData>(filename.c_str());
-                data = std::move(new_image);
-                vfov = data->initial_vfov;
-                eye_pos = data->initial_eye_pos;
-                data->ref_image.fitScreen(float(width)/height);
+                auto new_image = std::make_unique<BackgroundImage>(filename.c_str());
+                Position pos = ref_image->getTexture()->getBitmap().getLocation();
+                VALIDATE(pos.isValid());
+                auto new_terra = std::make_unique<Heightmap>(pos);
+                ref_image = std::move(new_image);
+                terra = std::move(new_terra);
+                initial_vfov = ref_image->getTexture()->getBitmap().getVfov();
+                vfov = initial_vfov;
+                eye_pos = terra->initialPos();
+                ref_image->fitScreen(float(width)/height);
             }catch(const std::exception e){
                 log_e("Failed to switch to new image. Reason: %s\n", e.what());
             }
@@ -297,7 +154,7 @@ float Terrain::hfov() const
     return vfov * width / height;
 }
 
-void Terrain::animateLight()
+glm::vec3 Terrain::animateLight()
 {
     vec4 light_dir = glm::normalize(vec4(0., 5.0, 5.0, 0.0));
     if(light_rotation_enabled){
@@ -305,6 +162,6 @@ void Terrain::animateLight()
     }
     auto M = glm::rotate(mat4(1.0f), light_rotation, vec3(0.f, 1.f, 0.f));
     light_dir = M*light_dir;
-    data->u_light_dir.set(vec3(light_dir));
+    return vec3(light_dir);
 }
 
