@@ -11,20 +11,36 @@ using namespace asg;
 using namespace geo;
 
 Terrain::Terrain(const char* image_filename)
-    : ref_image(std::make_unique<BackgroundImage>(image_filename))
-    , terra(std::make_unique<Heightmap>(ref_image->getTexture()->getBitmap().getLocation()))
-    , previous_filename(image_filename)
 {
-    Position pos = ref_image->getTexture()->getBitmap().getLocation();
-    VALIDATE(pos.isValid());
-    initial_vfov = ref_image->getTexture()->getBitmap().getVfov();
-
-    vfov = initial_vfov;
-    eye_pos = terra->initialPos();
+    initialize(image_filename);
+    // TODO: should I handle the object state after fail of init with default data
+    // ...or perhaps just guarantee it never happens?
 }
 
 Terrain::~Terrain()
 {
+}
+
+void Terrain::initialize(const char *image_filename)
+{
+    previous_filename = image_filename;
+    try{
+        auto new_image = std::make_unique<BackgroundImage>(image_filename);
+        Position pos = new_image->getTexture()->getBitmap().getLocation();
+        VALIDATE(pos.isValid());
+        auto new_terra = std::make_unique<Heightmap>(pos);
+
+        // Should be no more exceptions after this point. Swap to new state
+
+        ref_image = std::move(new_image);
+        terra = std::move(new_terra);
+        initial_vfov = ref_image->getTexture()->getBitmap().getVfov();
+        vfov = initial_vfov;
+        eye_pos = terra->initialPos();
+        ref_image->fitScreen(float(width)/height);
+    }catch(const std::exception e){
+        log_e("Failed to switch to new image. Reason: %s\n", e.what());
+    }
 }
 
 void Terrain::resize(glm::ivec2 size)
@@ -118,21 +134,7 @@ void Terrain::keyDown(int virtual_keycode)
         const char * filters[]  = {"*.jpg","*.png"};
         auto filename = fileOpenDialog(previous_filename.c_str(), filters, "Jpeg image files");
         if(!filename.empty()){
-            previous_filename = filename;
-            try{
-                auto new_image = std::make_unique<BackgroundImage>(filename.c_str());
-                Position pos = ref_image->getTexture()->getBitmap().getLocation();
-                VALIDATE(pos.isValid());
-                auto new_terra = std::make_unique<Heightmap>(pos);
-                ref_image = std::move(new_image);
-                terra = std::move(new_terra);
-                initial_vfov = ref_image->getTexture()->getBitmap().getVfov();
-                vfov = initial_vfov;
-                eye_pos = terra->initialPos();
-                ref_image->fitScreen(float(width)/height);
-            }catch(const std::exception e){
-                log_e("Failed to switch to new image. Reason: %s\n", e.what());
-            }
+            initialize(filename.c_str());
         }
     }break;
     }

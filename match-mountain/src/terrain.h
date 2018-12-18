@@ -15,6 +15,10 @@ public:
     Terrain(const char* image_filename);
     virtual ~Terrain() override;
 
+    // Try to load the picture and data for new area.
+    // If fails, object is not modified
+    void initialize(const char* image_filename);
+
     // AppletBase interface
 public:
     void resize(glm::ivec2 size) override;
