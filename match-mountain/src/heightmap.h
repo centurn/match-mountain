@@ -5,6 +5,10 @@
 namespace geo{
 
 // Mesh based on heightmap from SRTM data
+// Note on axes after import:
+// x is aligned along longitude
+// y is 'up' (height)
+// z is along latitude
 class Heightmap{
 public:
     Heightmap(const Position& pos);

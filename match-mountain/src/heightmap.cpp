@@ -54,14 +54,16 @@ static inline glm::vec2 groundCoords(Position origin, Position pos) {
 };
 
 static float eye_height(const ImportHgt& importer, Position pos){
-    auto idx = importer.nearestPixel(pos);
-            return importer.getPixelHeight(idx.y, idx.x);
+    auto idx = importer.getNearestPixel(pos);
+    return importer.getPixelHeight(idx);
 }
 
 Heightmap::Heightmap(const Position &pos)
 {
     ASG_STOPWATCH("Terrain ctor body");
     ImportHgt importer(pos);
+    origin_vtx = importer.getNearestPixel(pos);
+//    origin = importer.getPixelCoords(i, j);
     auto rect = importer.getPixelRegion(pos, min_extent);
 
     initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 20.0f, 0.0f);
@@ -76,8 +78,8 @@ Heightmap::Heightmap(const Position &pos)
     // Generate mesh geometry
     for(int i = rect.top_left.y; i != rect.bot_right.y; ++i){
         for(int j = rect.top_left.x; j != rect.bot_right.x; ++j, ++cur_vtx){
-            float hgt = importer.getPixelHeight(i, j);
-            auto grounds = groundCoords(pos, importer.getPixelCoords(i, j));
+            float hgt = importer.getPixelHeight(vec2(j, i));
+            auto grounds = groundCoords(pos, importer.getPixelCoords({j, i}));
             new (&cur_vtx->position) vec3(grounds.x, hgt, grounds.y);
             new (&cur_vtx->color) vec3(glm::clamp(hgt/2000, 0.f, 1.f)
                                        , 1.f - glm::clamp(hgt/2000, 0.f, 1.f)

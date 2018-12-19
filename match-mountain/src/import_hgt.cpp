@@ -52,7 +52,7 @@ ImportHgt::Region ImportHgt::getPixelRegion(Position center, double min_distance
 //    assert(center.lon.value >= origin.lon.value
 //           && center.lon.value <= center.lon.value + 1.0);
 
-    auto center_idx = nearestPixel(center);
+    auto center_idx = getNearestPixel(center);
 
     int lat_diff_pixels = int(std::round(min_distance / latSecApprox)) / hgt_resolution;
     int lon_diff_pixels = int(std::round(min_distance / lonSecApprox(center.lat))) / hgt_resolution;
@@ -71,11 +71,11 @@ ImportHgt::Region ImportHgt::getPixelRegion(Position center, double min_distance
     return result;
 }
 
-Position ImportHgt::getPixelCoords(int i, int j) const
+Position ImportHgt::getPixelCoords(glm::ivec2 pt) const
 {
-    assert(i >= 0 && i <= max_hgt_i && j >= 0 && j <= max_hgt_j);
-    return Position{{origin.lat.value + (origin.lat.value >= 0? -i*arc_value_per_px: i*arc_value_per_px)}
-               , {origin.lon.value + j*arc_value_per_px} };
+    assert(pt.y >= 0 && pt.y <= max_hgt_i && pt.x >= 0 && pt.x <= max_hgt_j);
+    return Position{{origin.lat.value + (origin.lat.value >= 0? -pt.y*arc_value_per_px: pt.y*arc_value_per_px)}
+               , {origin.lon.value + pt.x*arc_value_per_px} };
 }
 
 // Handle endianness in input. .hgt data is signed 16-bin big endian.
@@ -89,14 +89,14 @@ static inline int convertPixel(const uint8_t* ptr) {
     return result;
 }
 
-int ImportHgt::getPixelHeight(int i, int j) const
+int ImportHgt::getPixelHeight(glm::ivec2 pt) const
 {
-    assert(i >= 0 && i <= max_hgt_i && j >= 0 && j <= max_hgt_j);
-    size_t loc = size_t(i*max_hgt_j + j)*2;
+    assert(pt.y >= 0 && pt.y <= max_hgt_i && pt.x >= 0 && pt.x <= max_hgt_j);
+    size_t loc = size_t(pt.y*max_hgt_j + pt.x)*2;
     return convertPixel(&data[loc]);
 }
 
-glm::ivec2 ImportHgt::nearestPixel(Position pos) const
+glm::ivec2 ImportHgt::getNearestPixel(Position pos) const
 {
     int i = pos.lat.totalSec() / hgt_resolution;
     int j = pos.lon.totalSec() / hgt_resolution;
