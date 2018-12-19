@@ -54,8 +54,8 @@ static inline glm::vec2 groundCoords(Position origin, Position pos) {
 };
 
 static float eye_height(const ImportHgt& importer, Position pos){
-    auto [i, j] = importer.nearestPixel(pos);
-            return importer.getPixelHeight(i, j);
+    auto idx = importer.nearestPixel(pos);
+            return importer.getPixelHeight(idx.y, idx.x);
 }
 
 Heightmap::Heightmap(const Position &pos)
@@ -66,16 +66,16 @@ Heightmap::Heightmap(const Position &pos)
 
     initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 20.0f, 0.0f);
 
-    j_len = (rect.j_end - rect.j_begin);
-    i_len = (rect.i_end - rect.i_begin);
-    size_t  vertex_count = size_t(i_len*j_len);
+    dims.y = (rect.bot_right.y - rect.top_left.y);
+    dims.x = (rect.bot_right.x - rect.top_left.x);
+    size_t  vertex_count = size_t(dims.x*dims.y);
     std::vector<byte> vb(vertex_count * sizeof(Vertex));
     Vertex* vertices = reinterpret_cast<Vertex*>(vb.data());
     Vertex* cur_vtx = vertices;
 
     // Generate mesh geometry
-    for(int i = rect.i_begin; i != rect.i_end; ++i){
-        for(int j = rect.j_begin; j != rect.j_end; ++j, ++cur_vtx){
+    for(int i = rect.top_left.y; i != rect.bot_right.y; ++i){
+        for(int j = rect.top_left.x; j != rect.bot_right.x; ++j, ++cur_vtx){
             float hgt = importer.getPixelHeight(i, j);
             auto grounds = groundCoords(pos, importer.getPixelCoords(i, j));
             new (&cur_vtx->position) vec3(grounds.x, hgt, grounds.y);
@@ -90,14 +90,14 @@ Heightmap::Heightmap(const Position &pos)
     size_t indices_count = vertex_count + (vertex_count - 1)*2;
     std::vector<byte> ib(indices_count*sizeof(IdxType));
     IdxType* index = reinterpret_cast<IdxType*>(ib.data());
-    for(int i = 0; i != i_len - 1; ++i){
+    for(int i = 0; i != dims.y - 1; ++i){
         if(i != 0){// Degenerate triangle when connecting to next row
-            *(index++) = Ruint((i + 1)*j_len) - 1;
-            *(index++) = Ruint(i*j_len);
+            *(index++) = Ruint((i + 1) * dims.x) - 1;
+            *(index++) = Ruint(i * dims.x);
         }
-        for(int j = 0; j != j_len; ++j){
-            *(index++) = Ruint(i*j_len + j);
-            *(index++) = Ruint((i + 1)*j_len + j);
+        for(int j = 0; j != dims.x; ++j){
+            *(index++) = Ruint(i*dims.x + j);
+            *(index++) = Ruint((i + 1)*dims.x + j);
         }
     }
 

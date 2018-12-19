@@ -4,6 +4,7 @@
 
 namespace geo{
 
+// Mesh based on heightmap from SRTM data
 class Heightmap{
 public:
     Heightmap(const Position& pos);
@@ -14,13 +15,21 @@ public:
         return initial_eye_pos;
     }
 
+    struct IntersectResult{
+        glm::vec3 pos;
+        bool success;
+    };
+    IntersectResult surfacePosition(geo::Position position);
+
     static constexpr double min_extent = 20*1000.0;// 10 km square around the point of interest
 
 private:
     asg::Mesh terra;
     asg::UniformHandler u_mvp;
     asg::UniformHandler u_light_dir;
-    int i_len, j_len;// Heightmap dimensions
+    Position origin;// Geo location of origin point
+    glm::ivec2 origin_vtx;// Indices of vertex which corresponds to origin point
+    glm::ivec2 dims;// Heightmap dimensions
     glm::vec3 initial_eye_pos;
 };
 

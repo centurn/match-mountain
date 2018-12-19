@@ -52,7 +52,7 @@ ImportHgt::Region ImportHgt::getPixelRegion(Position center, double min_distance
 //    assert(center.lon.value >= origin.lon.value
 //           && center.lon.value <= center.lon.value + 1.0);
 
-    auto [center_i, center_j] = nearestPixel(center);
+    auto center_idx = nearestPixel(center);
 
     int lat_diff_pixels = int(std::round(min_distance / latSecApprox)) / hgt_resolution;
     int lon_diff_pixels = int(std::round(min_distance / lonSecApprox(center.lat))) / hgt_resolution;
@@ -64,10 +64,10 @@ ImportHgt::Region ImportHgt::getPixelRegion(Position center, double min_distance
         );
     };
     Region result;
-    std::tie((result.i_begin), result.i_end)
-            = fit_dim(center_i, lat_diff_pixels, max_hgt_i);
-    std::tie((result.j_begin), result.j_end)
-            = fit_dim(center_j, lon_diff_pixels, max_hgt_j);
+    std::tie((result.top_left.y), result.bot_right.y)
+            = fit_dim(center_idx.y, lat_diff_pixels, max_hgt_i);
+    std::tie((result.top_left.x), result.bot_right.x)
+            = fit_dim(center_idx.x, lon_diff_pixels, max_hgt_j);
     return result;
 }
 
@@ -96,12 +96,12 @@ int ImportHgt::getPixelHeight(int i, int j) const
     return convertPixel(&data[loc]);
 }
 
-std::tuple<int, int> ImportHgt::nearestPixel(Position pos) const
+glm::ivec2 ImportHgt::nearestPixel(Position pos) const
 {
     int i = pos.lat.totalSec() / hgt_resolution;
     int j = pos.lon.totalSec() / hgt_resolution;
-    return std::make_tuple(i >= 0? max_hgt_i - i: -i
-                           , j >= 0? j : max_hgt_j + j);
+    return glm::ivec2(j >= 0? j : max_hgt_j + j
+                    , i >= 0? max_hgt_i - i: -i);
 }
 
 }
