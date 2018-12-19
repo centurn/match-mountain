@@ -62,11 +62,14 @@ Heightmap::Heightmap(const Position &pos)
 {
     ASG_STOPWATCH("Terrain ctor body");
     ImportHgt importer(pos);
+
+    // For convenience of later code, origin is placed on the vertex which is nearest to the photo location
     origin_vtx = importer.getNearestPixel(pos);
-//    origin = importer.getPixelCoords(i, j);
+    origin = importer.getPixelCoords(origin_vtx);
     auto rect = importer.getPixelRegion(pos, min_extent);
 
-    initial_eye_pos = vec3(0.0f, eye_height(importer, pos) + 20.0f, 0.0f);
+    auto plane_eye_pos = groundCoords(origin, pos);
+    initial_eye_pos = vec3(plane_eye_pos.x, eye_height(importer, pos) + 20.0f, plane_eye_pos.y);
 
     dims.y = (rect.bot_right.y - rect.top_left.y);
     dims.x = (rect.bot_right.x - rect.top_left.x);
@@ -79,7 +82,7 @@ Heightmap::Heightmap(const Position &pos)
     for(int i = rect.top_left.y; i != rect.bot_right.y; ++i){
         for(int j = rect.top_left.x; j != rect.bot_right.x; ++j, ++cur_vtx){
             float hgt = importer.getPixelHeight(vec2(j, i));
-            auto grounds = groundCoords(pos, importer.getPixelCoords({j, i}));
+            auto grounds = groundCoords(origin, importer.getPixelCoords({j, i}));
             new (&cur_vtx->position) vec3(grounds.x, hgt, grounds.y);
             new (&cur_vtx->color) vec3(glm::clamp(hgt/2000, 0.f, 1.f)
                                        , 1.f - glm::clamp(hgt/2000, 0.f, 1.f)

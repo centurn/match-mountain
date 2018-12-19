@@ -78,7 +78,7 @@ Position ImportHgt::getPixelCoords(glm::ivec2 pt) const
                , {origin.lon.value + pt.x*arc_value_per_px} };
 }
 
-// Handle endianness in input. .hgt data is signed 16-bin big endian.
+// Handle endianness in input. .hgt data is signed 16-bit big endian.
 static inline int convertPixel(const uint8_t* ptr) {
     // Bit-shifting allows to be intependent on target platform
     uint16_t temp = uint16_t(ptr[0] << 8 | ptr[1]);
