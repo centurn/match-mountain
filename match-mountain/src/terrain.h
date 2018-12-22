@@ -43,7 +43,7 @@ private:
     float initial_vfov;
     glm::vec3 eye_pos;
     float vfov{glm::radians(50.f)};
-    glm::vec2 rotation_cam{0,0};// Rotation delta - cumulative in radians
+    glm::vec2 rotation_cam{0,-glm::radians(90.f)};// Rotation delta - cumulative in radians
 
     bool ref_image_enabled = false;
     bool ref_image_blend = true;

@@ -88,24 +88,24 @@ void Terrain::keyDown(int virtual_keycode)
 //    log_d("%c", virtual_keycode);
     constexpr float v = 10;
     auto direction = [this](){
-        auto cam = glm::inverse(getCamRotation()) *glm::vec4(0, 0, -1, 0);
-        return glm::normalize(vec3(cam.x, 0, cam.z));
+        auto cam = glm::inverse(getCamRotation()) * glm::vec4(0, 0, -1, 0);
+        return glm::normalize(vec3(cam.x, cam.y, 0));
     };
     switch(virtual_keycode){
     case 'e':// Up
-        eye_pos += vec3(0, v, 0);
+        eye_pos += vec3(0, 0, v);
         break;
     case 'q':// Down
-        eye_pos += vec3(0, -v, 0);
+        eye_pos += vec3(0, 0, -v);
         break;
     case 'd':{// Strafe right
         auto dir = direction();
-        eye_pos += vec3(-dir.z, 0, dir.x) * v;
+        eye_pos += vec3(dir.y, -dir.x, 0) * v;
         break;
     }
     case 'a':{// Strafe left
         auto dir = direction();
-        eye_pos += vec3(dir.z, 0, -dir.x) * v;
+        eye_pos += vec3(-dir.y, dir.x, 0) * v;
         break;
     }
     case 'w':// Forward
@@ -123,7 +123,7 @@ void Terrain::keyDown(int virtual_keycode)
         break;
     case '\r':// Enter - reset to initial position
         eye_pos = terra->initialPos();
-        rotation_cam = {0, 0};
+        rotation_cam = {0, -glm::radians(90.f)};
         vfov = initial_vfov;
         ref_image->setRotation(0);
         break;
@@ -144,7 +144,7 @@ glm::mat4 Terrain::getCamRotation() const
 {
     auto ry = glm::rotate(mat4(1)
                           , rotation_cam.x
-                          , vec3(0,1,0));
+                          , vec3(0,0,1));
     auto rx = glm::rotate(mat4(1)
                           , rotation_cam.y
                           , vec3(1,0,0));

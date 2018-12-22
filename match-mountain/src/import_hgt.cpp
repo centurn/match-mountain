@@ -100,8 +100,14 @@ glm::ivec2 ImportHgt::getNearestPixel(Position pos) const
 {
     int i = pos.lat.totalSec() / hgt_resolution;
     int j = pos.lon.totalSec() / hgt_resolution;
-    return glm::ivec2(j >= 0? j : max_hgt_j + j
-                    , i >= 0? max_hgt_i - i: -i);
+    return glm::ivec2(j >= 0? j : max_hgt_j + j - 1
+                              , i >= 0? max_hgt_i - i - 1: -i);
+}
+
+double ImportHgt::arcPerPixel() const
+{
+    // For now, just return the fixed value
+    return arc_value_per_px;
 }
 
 }

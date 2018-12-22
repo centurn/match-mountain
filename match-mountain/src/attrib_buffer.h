@@ -22,6 +22,7 @@ public:
     void set(span<T, Extent> data);
 
     void bind();
+    inline const byte* data() const;
 private:
     AttribBuffer(const byte* src, size_t extent, bool is_vertex);
 
@@ -32,6 +33,11 @@ private:
     bool is_vertex;
     bool dirty = true;// Needs to upload data to GL
 };
+
+const byte* AttribBuffer::data() const
+{
+    return buff.data();
+}
 
 template<class T, std::ptrdiff_t Extent>
 AttribBuffer::AttribBuffer(span<T, Extent> src, bool is_vertex)

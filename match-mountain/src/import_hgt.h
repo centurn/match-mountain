@@ -21,6 +21,9 @@ public:
     Position getPixelCoords(glm::ivec2 pt) const;
     int getPixelHeight(glm::ivec2 pt) const;
     glm::ivec2 getNearestPixel(Position pos) const;
+
+    //Resolution of data - in lat or lon per 'pixel'
+    double arcPerPixel() const;
 private:
     std::vector<uint8_t> data;
     Position origin;// The north-west corner of the tile

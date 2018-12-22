@@ -8,10 +8,14 @@
 
 namespace asg{
 
+// TODO: find appropriate place for these typedefs
 using glm::mat4;
 using glm::vec2;
 using glm::vec3;
 using glm::vec4;
+using glm::ivec2;
+using glm::cross;
+using glm::dot;
 
 class UniformHandler;
 
