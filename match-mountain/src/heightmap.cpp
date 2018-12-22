@@ -67,9 +67,6 @@ Heightmap::Heightmap(const Position &pos)
     origin_vtx -= rect.top_left;
     arc_per_pixel = importer.arcPerPixel();
 
-    initial_eye_pos = planarCoords(origin, pos);
-    initial_eye_pos.z = eye_height(importer, pos) + 20.0f;
-
     dims.y = (rect.bot_right.y - rect.top_left.y);
     dims.x = (rect.bot_right.x - rect.top_left.x);
     size_t  vertex_count = size_t(dims.x*dims.y);
@@ -138,7 +135,7 @@ Heightmap::Heightmap(const Position &pos)
     u_mvp = terra.addUniform("MVP");
     u_light_dir = terra.addUniform("light_dir");
 
-//    initial_eye_pos = surfaceCoords(pos).pos;
+    initial_eye_pos = surfaceCoords(pos).pos + vec3{0,0,2};
 }
 
 void Heightmap::render(const glm::mat4 &viewproj, const glm::vec3 &light_dir)
@@ -173,33 +170,34 @@ IntersectResult Heightmap::surfaceCoords(Position position)
     double delta_lat = position.lat.value - origin.lat.value;
     double delta_lon = position.lon.value - origin.lon.value;
     ivec2 cell = origin_vtx + ivec2{int(delta_lat / arc_per_pixel)
-                , int(delta_lon / arc_per_pixel) };
+                , -int(delta_lon / arc_per_pixel) };
     if(cell.x < 1 || cell.x >= dims.x - 1
-            || cell.y < 1 || cell.y >= dims.y - 1){
+            || cell.y < 0 || cell.y >= dims.y - 2){
         return {vec3{}, false};// Position of outside heightmap data
     }
 
-    // Move the index so that it points at the lower-left of the cell of interest
     if(delta_lat < 0)
-        --cell.y;
+        ++cell.y;
     if(delta_lon < 0)
         --cell.x;
+
+    // Move the index so that it points at the lower-left of the cell of interest
     vec3 ray_origin = planarCoords(origin, position);
-    ray_origin.y = 10'000.0f;// Pick from definitely above any mountain
+    ray_origin.z = 10'000.0f;// Pick from definitely above any mountain
     vec3 ll = getVtx(cell).position;
-    vec3 ur = getVtx({cell.x - 1, cell.y + 1}).position;
+    vec3 ur = getVtx({cell.x + 1, cell.y - 1}).position;
     assert(ray_origin.x >= ll.x && ray_origin.x <= ur.x
-           && ray_origin.z >= ll.z && ray_origin.z <= ur.z);
+           && ray_origin.y >= ll.y && ray_origin.y <= ur.y);
 
     vec3 pos_local = ray_origin - ll;// position in local coordinates of cell
     // We know that mesh triangles slice the cell from lower-left to upper right corner
     // So, we can know which one to intersect
     if(pos_local.y > pos_local.x){
         vec3 ul = getVtx({cell.x, cell.y - 1}).position;
-        return intersectTriangle(ll, ur, ul, ray_origin, {0, -1, 0});
+        return intersectTriangle(ll, ur, ul, ray_origin, {0, 0, -1});
     }else{
         vec3 lr = getVtx({cell.x+1, cell.y}).position;
-        return intersectTriangle(ll, lr, ur, ray_origin, {0, -1, 0});
+        return intersectTriangle(ll, lr, ur, ray_origin, {0, 0, -1});
     }
 }
 
