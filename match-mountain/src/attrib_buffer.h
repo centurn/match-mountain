@@ -41,7 +41,9 @@ const byte* AttribBuffer::data() const
 
 template<class T, std::ptrdiff_t Extent>
 AttribBuffer::AttribBuffer(span<T, Extent> src, bool is_vertex)
-    : AttribBuffer{reinterpret_cast<const byte*>(src.data()), src.size_bytes(), is_vertex}
+    : AttribBuffer{reinterpret_cast<const byte*>(src.data())
+                   , size_t(src.size_bytes())
+                   , is_vertex}
 {
 }
 

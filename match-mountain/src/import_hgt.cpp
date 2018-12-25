@@ -1,6 +1,7 @@
 #include "import_hgt.h"
 #include "asg_storage.h"
 #include <cstring>// for memcpy
+#include <tuple>
 
 using namespace asg;
 

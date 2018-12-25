@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "glm/trigonometric.hpp"
-#include <tuple>
+#include <vector>
 
 namespace geo{
 
@@ -32,10 +32,14 @@ struct Coordinate{
 struct Position{
     Coordinate lat;
     Coordinate lon;
+    float altitude {0};
     bool isValid(){
         return std::abs(lat.value) <= 90.0 && std::abs(lon.value) <= 180;
     }
 };
+
+using Way = std::vector<Position>;
+
 
 
 // Approximate len (meters) of 1 longitudal degree on a given latitude

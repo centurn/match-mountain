@@ -1,6 +1,8 @@
 #include "terrain.h"
 
 #include "import_hgt.h"
+#include "import_gpx.h"
+#include "geo_way.h"
 #include "attrib_buffer.h"
 #include "asg_perf.h"
 #include "asg_storage.h"
@@ -43,12 +45,28 @@ void Terrain::initialize(const char *image_filename)
     }
 }
 
+void Terrain::addTrack(const char *filename)
+{
+    const geo::Track track = importGPX(filename);
+    if(track.data.empty())
+        return;
+
+    WayGeometryFactory factory;
+    track_geometry = std::make_unique<MeshVector>(factory.createGeometry(track, terra.get()));
+    if(track_geometry->empty()){
+        track_geometry = nullptr;
+        return;
+    }
+    u_track_mvp = (*track_geometry)[0]->addUniform("MVP");
+}
+
 void Terrain::resize(glm::ivec2 size)
 {
     AppletBase::resize(size);
     ref_image->fitScreen(float(width)/height);
 }
 
+#include "asg_gl.h"
 void Terrain::render()
 {
     mat4 projection = glm::perspective(vfov
@@ -59,6 +77,14 @@ void Terrain::render()
     terra->render(viewproj, animateLight());
     if(ref_image_enabled){
         ref_image->render();
+    }
+    if(track_geometry){
+//        glDisable(GL_DEPTH_TEST);
+        u_track_mvp.set(viewproj);
+        for(const auto& i: *track_geometry){
+            i->render();
+        }
+//        glEnable(GL_DEPTH_TEST);
     }
 }
 

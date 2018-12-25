@@ -46,8 +46,8 @@ static const char* fs = R"(
 // Don't use haversine formula since we are supposed to look from fixed position. And more distant objects need less precision
 static inline glm::vec3 planarCoords(Position origin, Position pos) {
     return{ 111'300.0 * glm::cos(glm::radians(pos.lat.value)) * (pos.lon.value - origin.lon.value)
-          , 111'300.0 * (pos.lat.value - origin.lat.value)
-          , 0};
+        , 111'300.0 * (pos.lat.value - origin.lat.value)
+        , 0};
 };
 
 static float eye_height(const ImportHgt& importer, Position pos){
@@ -164,16 +164,20 @@ IntersectResult intersectTriangle(const vec3& v0, const vec3& v1, const vec3& v2
     return {result, inside};
 }
 
-IntersectResult Heightmap::surfaceCoords(Position position)
+IntersectResult Heightmap::surfaceCoords(Position position) const
 {
     // The corner of the cell which is closest to origin
     double delta_lat = position.lat.value - origin.lat.value;
     double delta_lon = position.lon.value - origin.lon.value;
-    ivec2 cell = origin_vtx + ivec2{int(delta_lat / arc_per_pixel)
-                , -int(delta_lon / arc_per_pixel) };
+    ivec2 cell = origin_vtx + ivec2{int(delta_lon / arc_per_pixel)
+            , -int(delta_lat / arc_per_pixel) };
+    vec3 ray_origin = planarCoords(origin, position);
     if(cell.x < 1 || cell.x >= dims.x - 1
             || cell.y < 0 || cell.y >= dims.y - 2){
-        return {vec3{}, false};// Position of outside heightmap data
+        // Position of outside heightmap data.
+        // Height is unknown, but still, return valid position in local reference frame
+        ray_origin.z = position.altitude;
+        return {ray_origin, false};
     }
 
     if(delta_lat < 0)
@@ -182,7 +186,6 @@ IntersectResult Heightmap::surfaceCoords(Position position)
         --cell.x;
 
     // Move the index so that it points at the lower-left of the cell of interest
-    vec3 ray_origin = planarCoords(origin, position);
     ray_origin.z = 10'000.0f;// Pick from definitely above any mountain
     vec3 ll = getVtx(cell).position;
     vec3 ur = getVtx({cell.x + 1, cell.y - 1}).position;
@@ -199,6 +202,15 @@ IntersectResult Heightmap::surfaceCoords(Position position)
         vec3 lr = getVtx({cell.x+1, cell.y}).position;
         return intersectTriangle(ll, lr, ur, ray_origin, {0, 0, -1});
     }
+}
+
+std::vector<glm::vec3> Heightmap::surfaceCoords(const Way &way) const
+{
+    std::vector<glm::vec3> result;
+    for(const auto& i: way){
+        result.emplace_back(surfaceCoords(i).pos);
+    }
+    return result;
 }
 
 }

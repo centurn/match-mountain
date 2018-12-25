@@ -44,6 +44,8 @@ private:
     bool dirty = true;
 };
 
+using MeshVector = std::vector<std::unique_ptr<asg::Mesh>>;
+
 template<typename T>
 size_t Mesh::addAttribute(T&& attr){
     attribs.emplace_back(attr);

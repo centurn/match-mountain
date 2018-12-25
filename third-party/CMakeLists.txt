@@ -9,5 +9,6 @@ if (NOT EMSCRIPTEN)
 
 endif ()
 
+add_subdirectory( pugixml )
 #message(INFO ${SOURCES2})
 set(SOURCES_THIRD_PARTY ${SOURCES2} PARENT_SCOPE)

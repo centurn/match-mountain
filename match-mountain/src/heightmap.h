@@ -24,7 +24,14 @@ public:
         return initial_eye_pos;
     }
 
-    IntersectResult surfaceCoords(geo::Position position);
+    // Find the surface coordinates that corresponds to a given geographic position
+    // In case the position is outside the covered area
+    //, returns valid coordinates, with source height and success == false
+    IntersectResult surfaceCoords(geo::Position position) const;
+
+    // Convert way from geo to local coordinate system
+    // Heightmap altitude is preferred. If it's not known, it's taken from the source data
+    std::vector<glm::vec3> surfaceCoords(const Way& way) const;
 
     static constexpr double min_extent = 20*1000.0;// 10 km square around the point of interest
 

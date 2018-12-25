@@ -16,3 +16,6 @@
 [submodule "third-party/tinyfiledialogs"]
 	path = third-party/tinyfiledialogs
 	url = https://git.code.sf.net/p/tinyfiledialogs/code
+[submodule "third-party/pugixml"]
+	path = third-party/pugixml
+	url = https://github.com/zeux/pugixml

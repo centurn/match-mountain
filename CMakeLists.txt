@@ -15,6 +15,7 @@ add_subdirectory(match-mountain/src)
 find_package(OpenGL REQUIRED)
 set(LIBS
   ${OPENGL_LIBRARY}
+  pugixml
 )
 
 if (EMSCRIPTEN)

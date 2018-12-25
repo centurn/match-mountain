@@ -4,6 +4,7 @@
 #include <exception>
 #include <string>
 #include <cassert>
+#include "glm/mat4x4.hpp"
 
 // Move it to our namespace just for convenience
 // Or should I place it in std:: directly?
@@ -20,6 +21,15 @@
 namespace asg{
 
 using uint = unsigned int;
+
+// Maybe it's not so clean for these typedefs but I use these types all over the place...
+using glm::mat4;
+using glm::vec2;
+using glm::vec3;
+using glm::vec4;
+using glm::ivec2;
+using glm::cross;
+using glm::dot;
 
 // Hide it into cpp?
 class GenericException

@@ -19,6 +19,8 @@ public:
     // If fails, object is not modified
     void initialize(const char* image_filename);
 
+    void addTrack(const char* filename);
+
     // AppletBase interface
 public:
     void resize(glm::ivec2 size) override;
@@ -38,6 +40,8 @@ private:
 private:
     std::unique_ptr<asg::BackgroundImage> ref_image;
     std::unique_ptr<geo::Heightmap> terra;
+    std::unique_ptr<asg::MeshVector> track_geometry;
+    asg::UniformHandler u_track_mvp;
     std::string previous_filename;
 
     float initial_vfov;
