@@ -80,10 +80,13 @@ void Terrain::render()
     }
     if(track_geometry){
 //        glDisable(GL_DEPTH_TEST);
+//        glDisable(GL_CULL_FACE);
+
         u_track_mvp.set(viewproj);
         for(const auto& i: *track_geometry){
             i->render();
         }
+//        glEnable(GL_CULL_FACE);
 //        glEnable(GL_DEPTH_TEST);
     }
 }
