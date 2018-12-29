@@ -43,15 +43,8 @@ else ()
 
 endif()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/SDL/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/stb)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/easyexif)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/span/include/tcb)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/glm)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third-party/tinyfiledialogs)
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../span/include/tcb)
-
+add_executable(match-mountain ${SOURCES} ${SOURCES_THIRD_PARTY})
+target_include_directories(match-mountain PUBLIC ${INCLUDES_THIRD_PARTY} ${CMAKE_CURRENT_SOURCE_DIR}/match-mountain/src )
 
 #message(STATUS,${SOURCES_THIRD_PARTY})
-add_executable(match-mountain ${SOURCES} ${SOURCES_THIRD_PARTY})
 target_link_libraries(match-mountain ${LIBS})

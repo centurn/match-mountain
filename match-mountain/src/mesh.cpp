@@ -31,7 +31,7 @@ void Mesh::render()
         glDrawElements(GLuint(draw_desc.draw_type)
                        , draw_desc.count
                        , static_cast<GLenum>(draw_desc.index_type)
-                       , reinterpret_cast<const void *>(draw_desc.offset));
+                       , reinterpret_cast<const void *>(draw_desc.offset));checkGL();
 
     }else{
         glDrawArrays(GLuint(draw_desc.draw_type)
