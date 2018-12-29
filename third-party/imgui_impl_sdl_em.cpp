@@ -18,6 +18,8 @@
 #include <SDL_syswm.h>
 #include "asg_gl.h"
 #include "asg_base.h"
+#include "window.h"
+#include <tuple>
 //#include <SDL_opengles2.h>
 
 // Data
@@ -410,8 +412,9 @@ void ImGui_ImplSdlGL3_Shutdown()
     ImGui_ImplSdlGL3_InvalidateDeviceObjects();
 }
 
-void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
+void ImGui_ImplSdlGL3_NewFrame(asg::Window* wnd)
 {
+    SDL_Window* window = wnd->getNativeWindow();
     if (!g_FontTexture)
         ImGui_ImplSdlGL3_CreateDeviceObjects();
 
@@ -420,7 +423,10 @@ void ImGui_ImplSdlGL3_NewFrame(SDL_Window* window)
     // Setup display size (every frame to accommodate for window resizing)
     int w, h;
     int display_w, display_h;
-    SDL_GetWindowSize(window, &w, &h);
+    auto s = wnd->getSize();
+    w = s.x;
+    h = s.y;
+    //SDL_GetWindowSize(window, &w, &h);
     //SDL_GL_GetDrawableSize(window, &display_w, &display_h);
     display_w = w;
     display_h = h;

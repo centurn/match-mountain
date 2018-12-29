@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "imgui_impl_sdl_em.h"
+#include "window.h"
 
 static bool show_demo_window = true;
 static bool show_another_window = false;
@@ -9,9 +10,10 @@ static bool show_another_window = false;
 
 namespace adapt{
 
-Gui::Gui(SDL_Window* window)
-    : window(window)
+Gui::Gui(asg::Window* wnd)
+    : wnd(wnd)
 {
+    SDL_Window* window = wnd->getNativeWindow();
     // Setup ImGui binding
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -43,7 +45,7 @@ Gui::~Gui(){
 }
 
 void Gui::update(){
-    ImGui_ImplSdlGL3_NewFrame(window);
+    ImGui_ImplSdlGL3_NewFrame(wnd);
     ImGui::SetNextWindowPos(ImVec2(300, 500), ImGuiCond_FirstUseEver);
     {
         ImGui::Begin("Debug");

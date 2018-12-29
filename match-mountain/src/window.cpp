@@ -75,7 +75,7 @@ Window::~Window()
 void Window::handleResize(glm::ivec2 new_size)
 {
     if(new_size != size){
-        log_d("Resize event: %dx%d\n", new_size.x, new_size.y);
+        log_i("Resize event: %dx%d\n", new_size.x, new_size.y);
         size = new_size;
         glViewport(0,0, size.x, size.y); checkGL();
         app->resize(new_size);

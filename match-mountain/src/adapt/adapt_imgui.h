@@ -3,18 +3,20 @@
 #include "asg_base.h"
 
 struct SDL_Window;
+namespace asg{class Window;};
+
 namespace adapt{
 
 class Gui{
 public:
-    explicit Gui(SDL_Window* window);
+    explicit Gui(asg::Window* wnd);
     ~Gui();
 
     void update();
 
     void render();
 private:
-    SDL_Window* window;
+    asg::Window* wnd;
 };
 
 }

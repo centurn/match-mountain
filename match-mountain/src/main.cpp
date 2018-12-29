@@ -33,7 +33,7 @@ int main(int /*argc*/, char */*argv*/[])
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    adapt::Gui gui(window.getNativeWindow());
+    adapt::Gui gui(&window);
     Terrain app(PICS_DIR "104600 IMG_0994.jpg");
     app.addTrack(PICS_DIR "_50.gpx");
 //    Terrain app(PICS_DIR "70000 IMG_0326.jpg");
