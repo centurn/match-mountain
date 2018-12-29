@@ -4,4 +4,9 @@ file(GLOB SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/*.h
 )
 
+list(APPEND SOURCES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/adapt/adapt_imgui.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/adapt/adapt_imgui.h
+)
+
 set(SOURCES ${SOURCES} PARENT_SCOPE)
