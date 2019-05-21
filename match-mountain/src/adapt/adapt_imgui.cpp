@@ -46,9 +46,12 @@ Gui::~Gui(){
 
 void Gui::update(){
     ImGui_ImplSdlGL3_NewFrame(wnd);
-    ImGui::SetNextWindowPos(ImVec2(300, 500), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowBgAlpha(0.3f);
     {
-        ImGui::Begin("Debug");
+        ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoTitleBar
+                     | ImGuiWindowFlags_NoDecoration
+                     | ImGuiWindowFlags_NoMove);
         static float f = 0.0f;
         static int counter = 0;
         ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
@@ -67,30 +70,30 @@ void Gui::update(){
         ImGui::End();
     }
 
-    // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-    if (show_another_window)
-    {
-        ImGui::Begin("Another Window", &show_another_window);
-        ImGui::Text("Hello from another window!");
-        if (ImGui::Button("Close Me"))
-            show_another_window = false;
-        ImGui::End();
-    }
+//    // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
+//    if (show_another_window)
+//    {
+//        ImGui::Begin("Another Window", &show_another_window);
+//        ImGui::Text("Hello from another window!");
+//        if (ImGui::Button("Close Me"))
+//            show_another_window = false;
+//        ImGui::End();
+//    }
 
-    // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
-    if (show_demo_window)
-    {
-        // small hack to overwrite the hardcoded position of the demo window
-        static bool firstTime = true;
-        if (firstTime) {
-            ImGui::SetNextWindowPos(ImVec2(20, 50), ImGuiCond_FirstUseEver);
-            ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
-            ImGui::Begin("ImGui Demo", &show_demo_window, ImGuiWindowFlags_MenuBar);
-            ImGui::End();
-        }
+//    // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
+//    if (show_demo_window)
+//    {
+//        // small hack to overwrite the hardcoded position of the demo window
+//        static bool firstTime = true;
+//        if (firstTime) {
+//            ImGui::SetNextWindowPos(ImVec2(20, 50), ImGuiCond_FirstUseEver);
+//            ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+//            ImGui::Begin("ImGui Demo", &show_demo_window, ImGuiWindowFlags_MenuBar);
+//            ImGui::End();
+//        }
 
-        ImGui::ShowDemoWindow(&show_demo_window);
-    }
+//        ImGui::ShowDemoWindow(&show_demo_window);
+//    }
 
 }
 

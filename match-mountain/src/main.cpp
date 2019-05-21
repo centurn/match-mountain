@@ -33,9 +33,9 @@ int main(int /*argc*/, char */*argv*/[])
         , -1
         , SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
-    adapt::Gui gui(&window);
+//    adapt::Gui gui(&window);
     Terrain app(PICS_DIR "104600 IMG_0994.jpg");
-    app.addTrack(PICS_DIR "_50.gpx");
+   // app.addTrack(PICS_DIR "_50.gpx");
 //    Terrain app(PICS_DIR "70000 IMG_0326.jpg");
     //tests::CubeTest app;
     window.setApplet(&app);
@@ -119,10 +119,10 @@ int main(int /*argc*/, char */*argv*/[])
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
         glBindVertexArray(0);checkGL();
-        gui.update();
+        //gui.update();
         app.render();
         glBindVertexArray(0);checkGL();
-        gui.render();
+        //gui.render();
 
         SDL_GL_SwapWindow(window.getNativeWindow());
     };
