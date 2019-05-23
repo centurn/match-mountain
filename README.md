@@ -16,10 +16,13 @@ I target the images from photo cameras. Unlike phones, there's usually no inform
 **Original (real) image:**  
 ![Original picture](doc/img/source.png  "Original picture")
 
-**3D terrain from SRTM3:**  
+**3D terrain from SRTM3 (bird's eye view):**  
+![Generated terrain](doc/img/birdseye.png  "Generated terrain")
+
+**3D terrain from SRTM3 (view from real camera location):**  
 ![Generated terrain](doc/img/terrain.png  "Generated terrain")
 
-**Overlay of image over generated terrain:**  
+**Overlay of semi-transparent image over generated terrain:**  
 ![Match](doc/img/match.png  "Match")
 
 ## What's done
